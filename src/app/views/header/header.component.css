@@ -1,0 +1,12 @@
+.header-padding {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.title {
+  margin-left: 20px;
+  font-size: 1.3rem;
+}
+.settings {
+  float: right;
+  margin-right: 10px;
+}

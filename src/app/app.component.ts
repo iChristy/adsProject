@@ -6,5 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'ads';
+
+  opened: boolean = true;
+  events: string[] = [];
+
+  onOpenedChange(opened: boolean): void {
+    this.opened = opened;
+  }
 }
