@@ -2,14 +2,16 @@
 
   <mat-sidenav-container class="row example-container">
 
-      <mat-sidenav #sidenav mode="side" class="col-sm-2 col-11 display-inbl" [(opened)]="opened" (opened)="events.push('open!')"
+      <mat-sidenav #sidenav mode="side" class="col-sm-4 col-md-2 col-11 display-inbl" [(opened)]="opened" (opened)="events.push('open!')"
                    (closed)="events.push('close!')">
         <app-menu></app-menu>
       </mat-sidenav>
 
-      <mat-sidenav-content [ngClass]="{'col-sm-12': !sidenav.opened}" class="col-sm-10 col-12 display-inbl">
+      <mat-sidenav-content [ngClass]="{'col-12': !opened, 'col-sm-8 col-md-10': opened}" class="  col-12 display-inbl">
         <app-header [opened]="opened" (openedChange)="onOpenedChange($event)"></app-header>
-        <app-zayavki-table></app-zayavki-table>
+<!--        <app-zayavki-table></app-zayavki-table>-->
+<!--      <app-zayavki-addition></app-zayavki-addition>-->
+        <router-outlet></router-outlet>
       </mat-sidenav-content>
   </mat-sidenav-container>
 

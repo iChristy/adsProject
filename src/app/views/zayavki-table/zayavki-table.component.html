@@ -1,37 +1,102 @@
+<div class="div-right">
+  <div class="div-padding">
+    <div class="row">
+      <div class="col-md-3 col-12">
+        <ng-template matStepLabel>Информация о заявителе</ng-template>
+        <mat-form-field class="example-form-field full-width">
+          <mat-label><mat-icon>search</mat-icon> Поиск</mat-label>
+          <input #inputSearchText matInput type="text" (keyup)="showTable(undefined, inputSearchText.value, selectSearchAddress.value)" name="secondStep">
+          <!--        <button mat-button  matSuffix mat-icon-button aria-label="Clear">-->
+          <!--          <mat-icon>close</mat-icon>-->
+          <!--        </button>-->
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Адрес</mat-label>
+          <mat-select #selectSearchAddress>
+            <mat-option [value]="null"
+                        (onSelectionChange)="showTable($event, inputSearchText.value, selectSearchAddress.value, selectSearcStatus.value)">
+              Все</mat-option>
+            <mat-option *ngFor="let house of houses" [value]="house.houseGuid"
+                        (onSelectionChange)="showTable($event, inputSearchText.value, house.houseGuid, selectSearcStatus.value)">
+              {{house.address}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Статус</mat-label>
+          <mat-select #selectSearcStatus>
+            <mat-option [value]="null"
+                        (onSelectionChange)="showTable($event, inputSearchText.value, selectSearchAddress.value, selectSearcStatus.value)">
+              Все</mat-option>
+            <mat-option *ngFor="let stat of status" [value]="stat.status"
+                        (onSelectionChange)="showTable($event, inputSearchText.value, selectSearchAddress.value, stat.status)">
+              {{stat.status}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Тип</mat-label>
+          <mat-select>
+            <!--        <mat-option *ngFor="let food of foods" [value]="food.value">-->
+            <!--          {{food.viewValue}}-->
+            <!--        </mat-option>-->
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Вид</mat-label>
+          <mat-select>
+            <!--        <mat-option *ngFor="let food of foods" [value]="food.value">-->
+            <!--          {{food.viewValue}}-->
+            <!--        </mat-option>-->
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
 
 
+  <table #table class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-<table class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <ng-container matColumnDef="number">
+      <th mat-header-cell *matHeaderCellDef (click)="showTable()"> Номер</th>
+      <td mat-cell *matCellDef="let element"> {{element.prefix}}-{{element.code}} </td>
+    </ng-container>
 
-  <!--- Note that these columns can be defined in any order.
-        The actual rendered columns are set as a property on the row definition" -->
+    <ng-container matColumnDef="address">
+      <th mat-header-cell *matHeaderCellDef> Адрес</th>
+      <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+    </ng-container>
 
-  <!-- Position Column -->
-  <ng-container matColumnDef="position">
-    <th mat-header-cell *matHeaderCellDef> No. </th>
-    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-  </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Статус</th>
+      <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+    </ng-container>
 
-  <!-- Name Column -->
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef> Name </th>
-    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-  </ng-container>
+    <ng-container matColumnDef="dateBegin">
+      <th mat-header-cell *matHeaderCellDef> Дата</th>
+      <td mat-cell *matCellDef="let element"> {{element.dateBegin}} </td>
+    </ng-container>
 
-  <!-- Weight Column -->
-  <ng-container matColumnDef="weight">
-    <th mat-header-cell *matHeaderCellDef> Weight </th>
-    <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-  </ng-container>
+    <ng-container matColumnDef="kind">
+      <th mat-header-cell *matHeaderCellDef> Вид</th>
+      <td mat-cell *matCellDef="let element">
+        <mat-icon style="color: lightblue">delete</mat-icon>
+      </td>
+    </ng-container>
 
-  <!-- Symbol Column -->
-  <ng-container matColumnDef="symbol">
-    <th mat-header-cell *matHeaderCellDef> Symbol </th>
-    <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-  </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="active-row"></tr>
+  </table>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
-
-<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</div>

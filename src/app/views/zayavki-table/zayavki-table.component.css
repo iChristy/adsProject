@@ -1,0 +1,12 @@
+.active-row:hover {
+  background-color: #535353;
+/*background-color: #303030;*/
+}
+
+.div-padding {
+  margin-top: 20px
+}
+
+.div-right {
+/*padding-right: 10px*/
+}

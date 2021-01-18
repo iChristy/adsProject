@@ -8,7 +8,7 @@ import { ZayavkiTableComponent } from './views/zayavki-table/zayavki-table.compo
 import {MatTableModule} from '@angular/material/table';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatListModule} from '@angular/material/list';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
@@ -16,33 +16,48 @@ import { HeaderComponent } from './views/header/header.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import { MenuComponent } from './views/menu/menu.component';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatPaginatorIntl, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
+import { ZayavkiAdditionComponent } from './views/zayavki-addition/zayavki-addition.component';
+import { getPaginatorIntl} from './translatePag' ;
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatInputModule} from '@angular/material/input';
+import {RouterModule} from '@angular/router';
+import {HttpClientModule} from '@angular/common/http';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
     AppComponent,
     ZayavkiTableComponent,
     HeaderComponent,
-    MenuComponent
+    MenuComponent,
+    ZayavkiAdditionComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatTableModule,
-        MatSidenavModule,
-      MatCheckboxModule,
-      FormsModule,
-      MatListModule,
-      MatIconModule,
-      MatButtonModule,
-      MatCardModule,
-      MatDividerModule,
-      MatPaginatorModule,
-      MatSortModule
-    ],
-  providers: [],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatTableModule,
+    MatSidenavModule,
+    MatCheckboxModule,
+    FormsModule,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDividerModule,
+    MatPaginatorModule,
+    MatSortModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatStepperModule,
+    MatInputModule,
+    HttpClientModule,
+    MatSelectModule
+  ],
+  providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
