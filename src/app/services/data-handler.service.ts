@@ -4,6 +4,11 @@ import {BehaviorSubject, Observable, of} from 'rxjs';
 import {GetDataService} from './get-data.service';
 import {Houses} from '../classes/Houses';
 import {Status} from '../classes/Status';
+import {filter, map} from 'rxjs/operators';
+import {Company} from '../classes/Company';
+import {User} from '../classes/User';
+import {KindWork} from '../classes/KindWork';
+import {TypeWork} from '../classes/TypeWork';
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +18,46 @@ export class DataHandlerService {
   zayavkiList: Zayavka[];
   housesList = new BehaviorSubject<Houses[]>([]);
   statusList = new BehaviorSubject<Status[]>([]);
+  typeList = new BehaviorSubject<TypeWork[]>([]);
+  kindList = new BehaviorSubject<KindWork[]>([]);
   zayavkiSubject = new BehaviorSubject<Zayavka[]>([]);
+  currentUser = new BehaviorSubject<User[]>([]);
 
   constructor(private getDataService: GetDataService) {
   }
 
+  getHttpZayavkiData() {
+    this.getDataService.getCurrentUser()
+      .pipe(
+        map(data => data.filter(data => data.id === 'PDCvH0p7BT')
+        )).subscribe(
+      user => {
+        this.currentUser.next(user);
+        this.getDataService.getCurrentCompany()
+          .pipe(
+            map(data => data.filter(data => data.companyId === user[0].companyId)
+            )).subscribe(
+          company => {
+            return this.getDataService.getZayavkiList().pipe(
+              map(data => data.filter(data => data.companyId === company[0].companyId)
+              )).subscribe(
+              zayavki => {
+                this.zayavkiList = zayavki;
+                this.zayavkiSubject.next(this.zayavkiList);
+              }
+            );
+          }
+        );
+      }
+    );
+  }
 
   //  Заявки
 
   getHttpZayavki() {
-    return this.getDataService.getZayavkiList().subscribe(
+    return this.getDataService.getZayavkiList().pipe(
+      map(data => data.filter(data => data.companyId)
+      )).subscribe(
       zayavki => {
         this.zayavkiList = zayavki;
         this.zayavkiSubject.next(this.zayavkiList);
@@ -61,28 +96,79 @@ export class DataHandlerService {
     );
   }
 
+  // Тип
+
+  getTypeList() {
+    this.getDataService.getTypeList().subscribe(
+      types => {
+        this.typeList.next(types);
+        console.log(types);
+      }
+    );
+  }
+
+  // Вид
+
+  getKindList() {
+    this.getDataService.getKindList().subscribe(
+      kinds => {
+        this.kindList.next(kinds);
+        console.log(kinds);
+      }
+    );
+  }
+
+  // Компания
+
+  getCurrentCompany(user: any) : string {
+    this.getDataService.getCurrentCompany()
+      .pipe(
+        map(data => data.filter(data => data.companyId === user[0].companyId)
+        )).subscribe(
+      company => {
+        return company.toString();
+      }
+    );
+    return '';
+  }
+
+  // Юзер
+
+  getCurrentUser(): any {
+    this.getDataService.getCurrentUser()
+      .pipe(
+        map(data => data.filter(data => data.id === 'PDCvH0p7BT')
+        )).subscribe(
+      user => {
+        this.currentUser.next(user);
+        return user;
+      }
+    );
+  }
+
 
   // Фильтр
 
-  filters(text?: string, houseGuid?: string, status?: string, kind?: string) {
-
+  filters(text?: string, houseGuid?: string, status?: string, type?: string, kind?: string) {
+    console.log(`${text} - ${houseGuid} - ${status} - ${type} - ${kind}`);
     let filterZayavki = this.zayavkiList;
     if (text !== undefined && text !== '') {
       filterZayavki = filterZayavki.filter(zayavka => zayavka.address.toUpperCase().includes(<string> text?.toUpperCase()));
     }
-    // if (kind !== null) {
-    //   filterZayavki = filterZayavki.filter(z => z.kindWork === kind);
-    // }
-    if (status !== null && status !== undefined) {
+    if (kind !== null && kind !== undefined && kind !== '') {
+      filterZayavki = filterZayavki.filter(z => z.kindWork === kind);
+    }
+    if (type !== null && type !== undefined && type !== '') {
+      filterZayavki = filterZayavki.filter(z => z.typeWork === type);
+    }
+    if (status !== null && status !== undefined && status !== '') {
       filterZayavki = filterZayavki.filter(z => z.status === status);
     }
-
-    if (houseGuid !== undefined && houseGuid !== '') {
+    if (houseGuid !== undefined && houseGuid !== null && houseGuid !== '') {
       console.log('v domah');
       filterZayavki = filterZayavki.filter(z => z.houseGuid === houseGuid);
     }
-    // filterZayavki = filterZayavki.filter(z => z.status === 'принято');
-    // filterZayavki = filterZayavki.filter(z => z.kindWork === 'Аварийная');
+
     return filterZayavki;
   }
 }

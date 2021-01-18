@@ -7,6 +7,8 @@ import {DataHandlerService} from '../../services/data-handler.service';
 import {Subscription} from 'rxjs';
 import {Houses} from '../../classes/Houses';
 import {Status} from '../../classes/Status';
+import {TypeWork} from '../../classes/TypeWork';
+import {KindWork} from '../../classes/KindWork';
 
 
 @Component({
@@ -22,6 +24,8 @@ export class ZayavkiTableComponent implements OnInit {
   textFilter: string = '';
   houses: Houses[];
   status: Status[];
+  types: TypeWork[];
+  kinds: KindWork[];
 
   // @ViewChild(MatTable, { static: true }) table: MatTable<any>;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
@@ -39,6 +43,12 @@ export class ZayavkiTableComponent implements OnInit {
   //     this.dataSource.data = this.zayavki;
   //   }, 1);
   // }
+  addressSearch: string;
+  kindSearch: string;
+  typeSearch: string;
+  statusSearch: string;
+  textSearch: string;
+  prinStat: number;
 
   constructor(private dataHandlerService: DataHandlerService) {
   }
@@ -54,24 +64,27 @@ export class ZayavkiTableComponent implements OnInit {
     this.dataHandlerService.statusList.subscribe(
       status => this.status = status
     );
+    this.dataHandlerService.kindList.subscribe(
+      kinds => this.kinds = kinds
+    );
+    this.dataHandlerService.typeList.subscribe(
+      types => this.types = types
+    );
   }
 
   updateDataTable() {
     this.dataSource = new MatTableDataSource<Zayavka>(this.zayavki);
     this.dataSource.paginator = this.paginator;
+
   }
 
-  showTable(event?: any, text?: string, address?: string, status?: string, kind?: string, type?: string,) {
-    // console.log(event.isUserInput);
-    console.log(status);
-    if (event !== undefined) {
-      if (event.isUserInput) {
-        this.zayavki = this.dataHandlerService.filters(text, address, status);
+  showTable() {
+    //  event.isUserInput
+        this.zayavki = this.dataHandlerService.filters(this.textSearch, this.addressSearch, this.statusSearch, this.typeSearch, this.kindSearch);
         this.updateDataTable();
-      }
-    } else {
-      this.zayavki = this.dataHandlerService.filters(text, address, status);
-      this.updateDataTable();
-    }
+  }
+
+  checkStat(status: string) {
+    this.prinStat = this.zayavki.filter(zayavkiList => zayavkiList.status === status).length;
   }
 }

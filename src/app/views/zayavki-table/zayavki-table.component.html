@@ -3,9 +3,15 @@
     <div class="row">
       <div class="col-md-3 col-12">
         <ng-template matStepLabel>Информация о заявителе</ng-template>
+        <!--        showTable($event, inputSearchText.value, selectSearchAddress.value, selectSearcStatus.value, selectSearchType.value, selectSearchKind.value)-->
         <mat-form-field class="example-form-field full-width">
-          <mat-label><mat-icon>search</mat-icon> Поиск</mat-label>
-          <input #inputSearchText matInput type="text" (keyup)="showTable(undefined, inputSearchText.value, selectSearchAddress.value)" name="secondStep">
+          <mat-label>
+            <mat-icon>search</mat-icon>
+            Поиск
+          </mat-label>
+          <input #inputSearchText matInput type="text" [(ngModel)]="textSearch"
+                 (keyup)="showTable()"
+                 name="secondStep">
           <!--        <button mat-button  matSuffix mat-icon-button aria-label="Clear">-->
           <!--          <mat-icon>close</mat-icon>-->
           <!--        </button>-->
@@ -16,12 +22,13 @@
       <div class="col-md-3">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Адрес</mat-label>
-          <mat-select #selectSearchAddress>
+          <mat-select [(ngModel)]="addressSearch" #selectSearchAddress
+                      (ngModelChange)="showTable()">
             <mat-option [value]="null"
-                        (onSelectionChange)="showTable($event, inputSearchText.value, selectSearchAddress.value, selectSearcStatus.value)">
-              Все</mat-option>
-            <mat-option *ngFor="let house of houses" [value]="house.houseGuid"
-                        (onSelectionChange)="showTable($event, inputSearchText.value, house.houseGuid, selectSearcStatus.value)">
+            >
+              Все
+            </mat-option>
+            <mat-option *ngFor="let house of houses" [value]="house.houseGuid">
               {{house.address}}
             </mat-option>
           </mat-select>
@@ -30,12 +37,11 @@
       <div class="col-md-3">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Статус</mat-label>
-          <mat-select #selectSearcStatus>
-            <mat-option [value]="null"
-                        (onSelectionChange)="showTable($event, inputSearchText.value, selectSearchAddress.value, selectSearcStatus.value)">
-              Все</mat-option>
-            <mat-option *ngFor="let stat of status" [value]="stat.status"
-                        (onSelectionChange)="showTable($event, inputSearchText.value, selectSearchAddress.value, stat.status)">
+          <mat-select [(ngModel)]="statusSearch" #selectSearcStatus (ngModelChange)="showTable()">
+            <mat-option [value]="null">
+              Все
+            </mat-option>
+            <mat-option *ngFor="let stat of status" [value]="stat.status">
               {{stat.status}}
             </mat-option>
           </mat-select>
@@ -44,26 +50,39 @@
       <div class="col-md-3">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Тип</mat-label>
-          <mat-select>
-            <!--        <mat-option *ngFor="let food of foods" [value]="food.value">-->
-            <!--          {{food.viewValue}}-->
-            <!--        </mat-option>-->
+          <mat-select [(ngModel)]="typeSearch" #selectSearchType (ngModelChange)="showTable()">
+            <mat-option style="border-bottom: 1px solid" [value]="null">
+              Все
+            </mat-option>
+            <mat-option *ngFor="let type of types" [value]="type.name">
+              {{type.name}}
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <div class="col-md-3">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Вид</mat-label>
-          <mat-select>
-            <!--        <mat-option *ngFor="let food of foods" [value]="food.value">-->
-            <!--          {{food.viewValue}}-->
-            <!--        </mat-option>-->
+          <mat-select [(ngModel)]="kindSearch" #selectSearchKind (ngModelChange)="showTable()">
+            <mat-option [value]="null">
+              Все
+            </mat-option>
+            <mat-option *ngFor="let kind of kinds" [value]="kind.name">
+              {{kind.name}}
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
     </div>
   </div>
 
+<!--  <div class="div-padding">-->
+<!--    <div class="row">-->
+<!--      <mat-card class="col-2" *ngFor="let stat of status" (loadedmetadata)="checkStat(stat.status)">-->
+<!--        <h1>Заявок {{stat.status}}: {{prinStat}}</h1>-->
+<!--      </mat-card>-->
+<!--    </div>-->
+<!--  </div>-->
 
   <table #table class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
@@ -90,7 +109,14 @@
     <ng-container matColumnDef="kind">
       <th mat-header-cell *matHeaderCellDef> Вид</th>
       <td mat-cell *matCellDef="let element">
-        <mat-icon style="color: lightblue">delete</mat-icon>
+        <mat-icon *ngIf="element.typeWork == 'Сантехнические'"
+                  [ngClass]="{'tek-color': element.kindWork === 'Текущая', 'avar-color': element.kindWork === 'Аварийная', 'plat-color': element.kindWork === 'Платная'}"
+        >waves
+        </mat-icon>
+        <mat-icon *ngIf="element.typeWork == 'Электротехнические'"
+                  [ngClass]="{'tek-color': element.kindWork === 'Текущая', 'avar-color': element.kindWork === 'Аварийная', 'plat-color': element.kindWork === 'Платная'}"
+        >flash_on
+        </mat-icon>
       </td>
     </ng-container>
 
@@ -98,5 +124,5 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="active-row"></tr>
   </table>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[10, 50, 100]" showFirstLastButtons></mat-paginator>
 </div>

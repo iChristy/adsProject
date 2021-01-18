@@ -26,6 +26,7 @@ import {MatInputModule} from '@angular/material/input';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {MatSelectModule} from '@angular/material/select';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import {MatSelectModule} from '@angular/material/select';
     MatStepperModule,
     MatInputModule,
     HttpClientModule,
-    MatSelectModule
+    MatSelectModule,
+    MatButtonToggleModule
   ],
   providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}],
   bootstrap: [AppComponent]

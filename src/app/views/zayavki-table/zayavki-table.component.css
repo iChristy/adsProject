@@ -10,3 +10,7 @@
 .div-right {
 /*padding-right: 10px*/
 }
+
+tr.mat-row, tr.mat-footer-row {
+  height: 75px;
+}
