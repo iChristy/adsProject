@@ -9,6 +9,7 @@ import {Houses} from '../../classes/Houses';
 import {Status} from '../../classes/Status';
 import {TypeWork} from '../../classes/TypeWork';
 import {KindWork} from '../../classes/KindWork';
+import {Routes, RouterModule, Router} from '@angular/router';
 
 
 @Component({
@@ -50,7 +51,7 @@ export class ZayavkiTableComponent implements OnInit {
   textSearch: string;
   prinStat: number;
 
-  constructor(private dataHandlerService: DataHandlerService) {
+  constructor(private dataHandlerService: DataHandlerService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -87,4 +88,11 @@ export class ZayavkiTableComponent implements OnInit {
   checkStat(status: string) {
     this.prinStat = this.zayavki.filter(zayavkiList => zayavkiList.status === status).length;
   }
+
+  navigate(zayavka: Zayavka) {
+    this.router.navigate(['/adsAdd', zayavka]);
+  }
+
+
+
 }

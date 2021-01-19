@@ -27,6 +27,14 @@ import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {MatSelectModule} from '@angular/material/select';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {registerLocaleData} from '@angular/common';
+import localeRu from '@angular/common/locales/ru';
+import { DateDisplayPipe } from './pipe/date-display.pipe';
+import { ContentsDialogComponent } from './dialog/contents-dialog/contents-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+
+registerLocaleData(localeRu);
 
 @NgModule({
   declarations: [
@@ -34,7 +42,9 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     ZayavkiTableComponent,
     HeaderComponent,
     MenuComponent,
-    ZayavkiAdditionComponent
+    ZayavkiAdditionComponent,
+    DateDisplayPipe,
+    ContentsDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -57,9 +67,14 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     MatInputModule,
     HttpClientModule,
     MatSelectModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatDialogModule,
+    ScrollingModule
   ],
   providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    ContentsDialogComponent
+  ]
 })
 export class AppModule { }

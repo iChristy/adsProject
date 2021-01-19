@@ -24,6 +24,7 @@ export class AppComponent implements OnInit{
     this.dataHandlerService.getStatusList();
     this.dataHandlerService.getTypeList();
     this.dataHandlerService.getKindList();
+    this.dataHandlerService.getHttpContent();
     // this.houses = this.dataHandlerService.getHouses();
   }
 
@@ -31,9 +32,6 @@ export class AppComponent implements OnInit{
     this.opened = opened;
   }
 
-  add() {
-    this.dataHandlerService.setZayavka();
-  }
 
   ngOnDestroy() {
     // this.dataHandlerService.getHttpZayavki().unsubscribe();

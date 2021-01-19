@@ -9,6 +9,9 @@ import {Company} from '../classes/Company';
 import {User} from '../classes/User';
 import {KindWork} from '../classes/KindWork';
 import {TypeWork} from '../classes/TypeWork';
+import * as moment from 'moment';
+import {formatDate} from '@angular/common';
+import {Content} from '../classes/Content';
 
 @Injectable({
   providedIn: 'root'
@@ -21,35 +24,50 @@ export class DataHandlerService {
   typeList = new BehaviorSubject<TypeWork[]>([]);
   kindList = new BehaviorSubject<KindWork[]>([]);
   zayavkiSubject = new BehaviorSubject<Zayavka[]>([]);
-  currentUser = new BehaviorSubject<User[]>([]);
+  currentUser = new BehaviorSubject<User>(new User());
+  workers = new BehaviorSubject<User[]>([]);
+  masters = new BehaviorSubject<User[]>([]);
+  dispatchers = new BehaviorSubject<User[]>([]);
+  dispatchersMasters = new BehaviorSubject<User[]>([]);
+  contents: Content[];
+
 
   constructor(private getDataService: GetDataService) {
   }
 
   getHttpZayavkiData() {
     this.getDataService.getCurrentUser()
-      .pipe(
-        map(data => data.filter(data => data.id === 'PDCvH0p7BT')
-        )).subscribe(
-      user => {
-        this.currentUser.next(user);
-        this.getDataService.getCurrentCompany()
-          .pipe(
-            map(data => data.filter(data => data.companyId === user[0].companyId)
-            )).subscribe(
-          company => {
-            return this.getDataService.getZayavkiList().pipe(
-              map(data => data.filter(data => data.companyId === company[0].companyId)
-              )).subscribe(
-              zayavki => {
-                this.zayavkiList = zayavki;
-                this.zayavkiSubject.next(this.zayavkiList);
+      .subscribe(
+        user => {
+          console.log(user);
+          let currentUser = user.find(data => data.id === 'PDCvH0p7BT');
+          this.workers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'worker'));
+          this.masters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'master'));
+          this.dispatchers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcher'));
+          this.dispatchersMasters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcherMaster'));
+
+          if (currentUser) {
+
+            this.currentUser.next(currentUser);
+
+            this.getDataService.getCurrentCompany()
+              .pipe(
+                map(data => data.filter(data => data.companyId === currentUser?.companyId)
+                )).subscribe(
+              company => {
+                return this.getDataService.getZayavkiList().pipe(
+                  map(data => data.filter(data => data.companyId === company[0].companyId)
+                  )).subscribe(
+                  zayavki => {
+                    this.zayavkiList = zayavki;
+                    this.zayavkiSubject.next(this.zayavkiList);
+                  }
+                );
               }
             );
           }
-        );
-      }
-    );
+        }
+      );
   }
 
   //  Заявки
@@ -65,8 +83,24 @@ export class DataHandlerService {
     );
   }
 
-  setZayavka() {
-    this.zayavkiList.push(ZayavkaNew);
+  formatOfDate(dateString: string) {
+    let date = moment(dateString, 'DD-MM-YYYY HH:mm').toDate();
+    return formatDate(new Date(date), 'dd-MM-yyyy HH:mm', 'en-GB');
+  }
+
+  setZayavka(zayavka: Zayavka) {
+    let listPrefix = this.zayavkiList.filter(z => z.prefix == this.currentUser.getValue().ownPrefix);
+    let idZayavaka = Math.max.apply(Math, listPrefix.map(list => list.code)) + 1;
+    zayavka.code = idZayavaka;
+    // @ts-ignore
+    zayavka.prefix = this.currentUser.getValue().ownPrefix;
+    zayavka.dateBegin = this.formatOfDate(formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-GB'));
+    zayavka.status = zayavka.workerId ? 'назначено' : 'принято';
+    let momentDate = moment(zayavka.dateBegin, 'DD-MM-YYYY HH:mm').toDate();
+    momentDate.setHours(momentDate.getHours() + parseInt(zayavka.time));
+    zayavka.dateDeadline = formatDate(momentDate.toString(), 'dd-MM-yyyy HH:mm', 'en-US', '+0500');
+    this.zayavkiList.push(zayavka);
+    console.log(this.zayavkiList);
     this.zayavkiSubject.next(this.zayavkiList);
   }
 
@@ -118,9 +152,34 @@ export class DataHandlerService {
     );
   }
 
+  // Контенты
+
+  getHttpContent() {
+    this.getDataService.getContentList().subscribe(
+      content => {
+        this.contents = content;
+      }
+    );
+  }
+
+  getContentList(type: string, kind: string) {
+    console.log(this.contents);
+      if (kind === 'Платная') {
+        return this.contents.filter(content => content.typeWork === type && content.price)
+      }
+      else {
+        return this.contents.filter(content => content.typeWork === type && content.time)
+      }
+    return ;
+  }
+
+  contentFilter(name: string) {
+
+  }
+
   // Компания
 
-  getCurrentCompany(user: any) : string {
+  getCurrentCompany(user: any): string {
     this.getDataService.getCurrentCompany()
       .pipe(
         map(data => data.filter(data => data.companyId === user[0].companyId)
@@ -135,15 +194,15 @@ export class DataHandlerService {
   // Юзер
 
   getCurrentUser(): any {
-    this.getDataService.getCurrentUser()
-      .pipe(
-        map(data => data.filter(data => data.id === 'PDCvH0p7BT')
-        )).subscribe(
-      user => {
-        this.currentUser.next(user);
-        return user;
-      }
-    );
+    // this.getDataService.getCurrentUser()
+    //   .pipe(
+    //     map(data => data.filter(data => data.id === 'PDCvH0p7BT')
+    //     )).subscribe(
+    //   user => {
+    //     this.currentUser.next(user);
+    //     return user;
+    //   }
+    // );
   }
 
 
