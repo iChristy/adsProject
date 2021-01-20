@@ -1,6 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {DataHandlerService} from '../../services/data-handler.service';
+import {User} from '../../classes/User';
 
 @Component({
   selector: 'app-zayavki-edit-dialog',
@@ -24,6 +25,7 @@ export class ZayavkiEditDialogComponent implements OnInit {
     this.fieldTitle = this.data[1];
     this.fieldName = this.data[2];
     this.fieldValue = this.data[3];
+
   }
 
   onConfirm() {

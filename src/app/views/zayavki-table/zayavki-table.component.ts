@@ -28,22 +28,8 @@ export class ZayavkiTableComponent implements OnInit {
   types: TypeWork[];
   kinds: KindWork[];
 
-  // @ViewChild(MatTable, { static: true }) table: MatTable<any>;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  // @Input('zayavki') set setZayavki(zayavki: Zayavka[]) {
-  //   this.zayavki = zayavki;
-  //   this.dataSource = new MatTableDataSource<Zayavka>(this.zayavki);
-  //   this.dataSource.data = [...this.zayavki];
-  //   this.dataSource.paginator = this.paginator;
-  //   this.dataSource._updateChangeSubscription();
-  //   this.table.renderRows();
-  // }
 
-  // ngAfterViewInit() {
-  //   setTimeout(() => {
-  //     this.dataSource.data = this.zayavki;
-  //   }, 1);
-  // }
   addressSearch: string;
   kindSearch: string;
   typeSearch: string;
@@ -80,7 +66,6 @@ export class ZayavkiTableComponent implements OnInit {
   }
 
   showTable() {
-    //  event.isUserInput
         this.zayavki = this.dataHandlerService.filters(this.textSearch, this.addressSearch, this.statusSearch, this.typeSearch, this.kindSearch);
         this.updateDataTable();
   }

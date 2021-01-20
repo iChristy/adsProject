@@ -1,0 +1,349 @@
+<div class="container">
+
+  <div class="row justify-content-around div-top">
+
+    <div class="col-md-4 col-3" style="text-align: center">
+      <mat-card-subtitle>
+        <mat-icon class="icon-size" *ngIf="zayavka.typeWork == 'Сантехнические'"
+                  [ngClass]="{'tek-color': zayavka.kindWork === 'Текущая', 'avar-color': zayavka.kindWork === 'Аварийная', 'plat-color': zayavka.kindWork === 'Платная'}"
+        >waves
+        </mat-icon>
+        <mat-icon class="icon-size" *ngIf="zayavka.typeWork == 'Электротехнические'"
+                  [ngClass]="{'tek-color': zayavka.kindWork === 'Текущая', 'avar-color': zayavka.kindWork === 'Аварийная', 'plat-color': zayavka.kindWork === 'Платная'}"
+        >flash_on
+        </mat-icon>
+      </mat-card-subtitle>
+    </div>
+
+    <div class="col-md-4 col-3" style="text-align: center">
+      <h2>Заявка {{zayavka.prefix}}-{{zayavka.code}}</h2>
+    </div>
+
+    <div class="col-md-4 col-12" style="text-align: center">
+      <button mat-mini-fab color="primary">
+        <mat-icon>book</mat-icon>
+      </button>
+      <button *ngIf="zayavka.status !== 'выполнено' && zayavka.status !== 'отказ'"
+              mat-mini-fab color="primary" class="icon-margin"
+              (click)="openConfirmDialog('Подтвердить выполнение заявки?', 'status', 'выполнено', 'dateComplete')">
+        <mat-icon>done</mat-icon>
+      </button>
+      <button mat-mini-fab color="primary" class="icon-margin" *ngIf="zayavka.status !== 'выполнено' && zayavka.status !== 'отложено' && zayavka.status !== 'отказ'"
+              (click)="openConfirmDialog('Отложить выполнение заявки?', 'status', 'отложено')">
+        <mat-icon>schedule</mat-icon>
+      </button>
+      <button mat-mini-fab color="primary" class="icon-margin" *ngIf="zayavka.status !== 'выполнено' && zayavka.status !== 'отказ'"
+              (click)="openConfirmDialog('Отменить выполнение заявки?', 'status', 'отказ', 'dateComplete')">
+        <mat-icon>cancel</mat-icon>
+      </button>
+      <button *ngIf="zayavka.status === 'ожидание оплаты'" mat-mini-fab color="primary" class="icon-margin"
+              (click)="openConfirmDialog('Подтвердить оплату?', 'status', zayavka.workerId ? 'назначено' : 'принято')">
+        <mat-icon>payment</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="row justify-content-around">
+    <div class="col-md-3 col-12">
+      <mat-card style="text-align: center">
+        <mat-card-subtitle>
+          Время создания
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.dateBegin}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card style="text-align: center">
+        <mat-card-subtitle>
+          Часов на выполнение
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.time ? zayavka.time : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card style="text-align: center">
+        <mat-card-subtitle>
+          Сроки выполнения
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.dateDeadline}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card style="text-align: center">
+        <mat-card-subtitle>
+          Время выполения
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.dateComplete ? zayavka.dateComplete : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row justify-content-around div-top">
+    <div class="col-md-6 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Адрес
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.address}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Статус
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.status}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Сумма
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.price ? zayavka.price : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row justify-content-around div-top">
+    <div class="col-md-6 col-12">
+      <mat-card class="active-card" (click)="openContentsDialog()">
+        <mat-card-subtitle>
+          Содержание
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.contents ? zayavka.contents : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="col-md-6 col-12">
+      <mat-card class="active-card"
+                (click)="openEditDialog('Редактирование примечания', 'Примечание', 'comment', zayavka.comment)">
+        <mat-card-subtitle>
+          Примечание
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.comment ? zayavka.comment : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row justify-content-around div-top">
+    <div class="col-md-6">
+      <mat-card class="active-card"
+                (click)="openEditDialog('Редактирование работ', 'Работы', 'actions', zayavka.actions)">
+        <mat-card-subtitle>
+          Работы
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.actions ? zayavka.actions : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-6">
+      <mat-card class="active-card"
+                (click)="openEditDialog('Редактирование материалов', 'Материалы', 'materials', zayavka.materials)">
+        <mat-card-subtitle>
+          Материалы
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.materials ? zayavka.materials : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row justify-content-around div-top">
+    <div class="col-md-3 col-12 align-center">
+      <mat-card-subtitle>
+      </mat-card-subtitle>
+      <mat-card-content>
+        <h2 class="zagolovok-pad">Заявитель</h2>
+      </mat-card-content>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Имя
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.fioSecondary ? zayavka.fioSecondary : zayavka.fioOwner}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Телефон
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.phone}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Email
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.email ? zayavka.email : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row justify-content-around div-top">
+    <div class="col-md-3 col-12 align-center">
+      <mat-card-subtitle>
+      </mat-card-subtitle>
+      <mat-card-content>
+        <h2 class="zagolovok-pad">Диспетчер</h2>
+      </mat-card-content>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Имя
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{dispatcherName}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Телефон
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.phone}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Специальность
+        </mat-card-subtitle>
+        <mat-card-content>
+          Диспетчер
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row justify-content-around div-top">
+    <div class="col-md-3 col-12 align-center">
+      <mat-card-subtitle>
+      </mat-card-subtitle>
+      <mat-card-content>
+        <h2 class="zagolovok-pad">Мастер</h2>
+      </mat-card-content>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card class="active-card"  (click)="openEditEmpoyeeDialog('Редактирование мастера', 'Мастер', 'masterId', zayavka.masterId, zayavka.typeWork)">
+        <mat-card-subtitle>
+          Имя
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.masterId ? masterName : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Телефон
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.masterId ? '890456723112' : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Специальность
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.masterId ? 'Инженер' : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row justify-content-around div-top">
+    <div class="col-md-3 col-12 align-center">
+      <mat-card-subtitle>
+      </mat-card-subtitle>
+      <mat-card-content>
+        <h2 class="zagolovok-pad">Рабочий</h2>
+      </mat-card-content>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card class="active-card" (click)="openEditEmpoyeeDialog('Редактирование рабочего', 'Рабочий', 'workerId', zayavka.workerId, zayavka.typeWork)">
+        <mat-card-subtitle>
+          Имя
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.workerId ? workerName : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Телефон
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.workerId ? '89056783219' : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-3 col-12">
+      <mat-card>
+        <mat-card-subtitle>
+          Специальность
+        </mat-card-subtitle>
+        <mat-card-content>
+          {{zayavka.workerId ? 'Слесарь' : '---'}}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+</div>

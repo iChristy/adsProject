@@ -32,6 +32,7 @@ export class DataHandlerService {
   masters = new BehaviorSubject<User[]>([]);
   dispatchers = new BehaviorSubject<User[]>([]);
   dispatchersMasters = new BehaviorSubject<User[]>([]);
+  employeeList: User[];
   contents: Content[];
   flatsList: Flats[];
   citizenInfoList: CitizenInfo[];
@@ -48,14 +49,16 @@ export class DataHandlerService {
       .subscribe(
         user => {
           console.log(user);
+
           let currentUser = user.find(data => data.id === 'PDCvH0p7BT');
           this.workers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'worker'));
           this.masters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'master'));
           this.dispatchers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcher'));
           this.dispatchersMasters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcherMaster'));
+          // @ts-ignore
+          this.employeeList = user.filter(user => user.companyId === currentUser.companyId);
 
           if (currentUser) {
-
             this.currentUser.next(currentUser);
 
             this.getDataService.getCurrentCompany()

@@ -1,0 +1,17 @@
+.icon-margin {
+  margin-left: 10px
+}
+.active-card:hover {
+  background-color: #535353;
+  cursor: pointer;
+  /*background-color: #303030;*/
+}
+.zagolovok-pad {
+  padding-top: 10px;
+}
+.align-center {
+  text-align: center;
+}
+.icon-size {
+  /*size: 40px;*/
+}

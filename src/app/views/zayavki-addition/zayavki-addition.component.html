@@ -1,0 +1,248 @@
+<mat-horizontal-stepper [linear]="true">
+  <mat-step [stepControl]="form1.control">
+    <form #form1="ngForm">
+      <ng-template matStepLabel>Информация о заявителе</ng-template>
+      <!--      <mat-form-field class="example-form-field">-->
+      <!--        <mat-label>Clearable input</mat-label>-->
+      <!--        <input matInput type="text" [(ngModel)]="zayavka.address" name="firstStep">-->
+      <div class="container">
+        <div class="row justify-content-around div-top">
+
+          <div class="col-12 col-md-4">
+            <mat-form-field  appearance="fill" class="full-width">
+              <mat-label>Адрес</mat-label>
+              <mat-select [(ngModel)]="zayavka.houseGuid"  name="houses">
+                <mat-option *ngFor="let house of houses" [value]="house.houseGuid">
+                  {{house.address}}
+                </mat-option>
+              </mat-select>
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <ng-template matStepLabel>Информация о заявителе</ng-template>
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>Номер квартиры</mat-label>
+              <input matInput type="text" [(ngModel)]="zayavka.flatNum" name="flatModel">
+              <button mat-button *ngIf="zayavka.flatNum" matSuffix mat-icon-button aria-label="Очистить" (click)="zayavka.flatNum = ''">
+                <mat-icon>close</mat-icon>
+              </button>
+              <button mat-button color="primary" *ngIf="zayavka.flatNum && zayavka.houseGuid" matSuffix mat-icon-button aria-label="Данные заявителей"
+                      (click)="openCitizenInfoDialog()">
+                <mat-icon>list</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <div class="row justify-content-around div-divider">
+          <div class="col-12">
+            <mat-divider></mat-divider>
+          </div>
+        </div>
+        <div class="row justify-content-around">
+
+          <div class="col-12 col-md-4">
+            <ng-template matStepLabel>Информация о заявителе</ng-template>
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>ФИО собственника</mat-label>
+              <input matInput type="text" [(ngModel)]="zayavka.fioOwner" name="fioOwnerModel">
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <ng-template matStepLabel>Информация о заявителе</ng-template>
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>ФИО заявителя</mat-label>
+              <input matInput type="text" [(ngModel)]="zayavka.fioSecondary" name="fioSecModel">
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="row justify-content-around div-top">
+          <div class="col-12 col-md-4">
+            <ng-template matStepLabel>Информация о заявителе</ng-template>
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>Телефон</mat-label>
+              <input matInput type="text" [(ngModel)]="zayavka.phone" name="phoneModel">
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-4">
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="text" [(ngModel)]="zayavka.email" name="emailModel">
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row justify-content-center div-top">
+          <div class="col-1">
+            <button mat-button matStepperNext (click)="show()">Далее</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="form2.control">
+    <form #form2="ngForm">
+      <ng-template matStepLabel>Информация о заявке</ng-template>
+
+      <div class="div-top">
+
+        <div class="row justify-content-around div-top">
+
+          <div class="col-12 col-md-4">
+
+              <mat-button-toggle-group name="kindGroup" [(ngModel)]="zayavka.kindWork">
+                <mat-button-toggle *ngFor="let kind of kinds" [value]="kind.name"
+                                   [ngClass]="{'tek-color': zayavka.kindWork === 'Текущая', 'avar-color': zayavka.kindWork === 'Аварийная', 'plat-color': zayavka.kindWork === 'Платная'}">
+                  {{kind.name}}
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Тип</mat-label>
+              <mat-select [(ngModel)]="zayavka.typeWork" name="typeChange" (ngModelChange)="changeListStaff()">
+                <mat-option *ngFor="let type of types" [value]="type.name">
+                  {{type.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <mat-divider class="div-divider"></mat-divider>
+
+        <div class="row justify-content-around div-top">
+
+          <div class="col-12 col-md-4">
+            <button mat-raised-button style="height: 70px" [disabled]="!zayavka.typeWork || !zayavka.kindWork" (click)="openContentsDialog()">
+              К списку содержаний для заявки <mat-icon>arrow_right</mat-icon>
+            </button>
+          </div>
+
+          <div class="col-12 col-md-4">
+              <mat-list *ngIf="zayavka.contents">
+                <mat-list-item *ngFor="let content of zayavka.contents">{{content}}</mat-list-item>
+              </mat-list>
+            <mat-list *ngIf="!zayavka.contents">
+              <mat-list-item>Выберите содержание</mat-list-item>
+            </mat-list>
+          </div>
+
+        </div>
+
+        <div class="row justify-content-around div-top">
+
+          <div class="col-12 col-md-4 div-top">
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>Время / ч.</mat-label>
+              <input matInput type="text" [(ngModel)]="zayavka.time" name="time" [disabled]="true">
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4 div-top">
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>Сумма / руб.</mat-label>
+              <input matInput type="text" [(ngModel)]="zayavka.price" name="price" [disabled]="true">
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <mat-divider class="div-divider"></mat-divider>
+
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10">
+            <mat-form-field class="example-form-field full-width">
+              <mat-label>Примечание к выполнению</mat-label>
+              <textarea matInput type="text" [(ngModel)]="zayavka.comment" name="commentField">
+              <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+              </button>
+              </textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row justify-content-center div-top">
+          <div class="col-1">
+            <button mat-button matStepperNext (click)="show()">Далее</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="form3.control">
+    <form #form3="ngForm">
+      <ng-template matStepLabel>Выбор работников</ng-template>
+      <div class="div-top">
+
+        <div class="row justify-content-around div-top">
+
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Мастер</mat-label>
+              <mat-select [(ngModel)]="zayavka.masterId" name="masterField">
+                <mat-option [value]="">
+                  Не определен
+                </mat-option>
+                <mat-option *ngFor="let master of tmpMasters" [value]="master.id">
+                  {{master.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Рабочий</mat-label>
+              <mat-select [(ngModel)]="zayavka.workerId" name="workerField">
+                <mat-option [value]="">
+                  Не определен
+                </mat-option>
+                <mat-option *ngFor="let worker of tmpWorkers" [value]="worker.id">
+                  {{worker.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="row justify-content-center div-top">
+          <div class="col-1">
+            <button mat-button matStepperNext (click)="creationOfZayavka()">Создать заявку</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+</mat-horizontal-stepper>
+
+<!--<button mat-raised-button (click)="addNew()">GO</button>-->
