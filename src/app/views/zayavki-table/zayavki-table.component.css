@@ -1,5 +1,6 @@
 .active-row:hover {
   background-color: #535353;
+  cursor: pointer;
 /*background-color: #303030;*/
 }
 
@@ -12,5 +13,5 @@
 }
 
 tr.mat-row, tr.mat-footer-row {
-  height: 75px;
+  height: 60px;
 }

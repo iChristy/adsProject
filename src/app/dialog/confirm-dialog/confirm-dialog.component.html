@@ -1,0 +1,12 @@
+<div>
+  <mat-card>
+    <h2>Редактирование</h2>
+    <mat-card-subtitle >
+      {{question}}
+    </mat-card-subtitle>
+  </mat-card>
+  <mat-card-actions>
+    <button mat-raised-button (click)="onCancel()">Отменить</button>
+    <button mat-raised-button color="primary" (click)="onConfirm()">Сохранить изменения</button>
+  </mat-card-actions>
+</div>

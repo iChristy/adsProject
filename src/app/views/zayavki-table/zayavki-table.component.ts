@@ -90,7 +90,9 @@ export class ZayavkiTableComponent implements OnInit {
   }
 
   navigate(zayavka: Zayavka) {
-    this.router.navigate(['/adsAdd', zayavka]);
+    console.log(zayavka);
+    this.dataHandlerService.setCurrentZayavka(zayavka);
+    this.router.navigate(['/adsCurrent']);
   }
 
 

@@ -1,0 +1,12 @@
+<div class="row ">
+  <h2>Данные заявителей</h2>
+  <div class="div-top" *ngFor="let info of citizenInfo" >
+    <mat-card (click)="checkInfo(info)" class="full-width card-info">
+      <div class="row justify-content-around" style="text-align: center">
+        <div class="col-md-4 col-12">{{info.fioSecondary ? info.fioSecondary : info.fioOwner}}</div>
+        <div class="col-md-4 col-12">{{info.phone}}</div>
+        <div class="col-md-4 col-12">{{info.email ? info.email : 'Email не был указан' }}</div>
+      </div>
+    </mat-card>
+  </div>
+</div>

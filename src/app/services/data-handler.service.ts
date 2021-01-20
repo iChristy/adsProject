@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Zayavka} from '../interfaces/Zayavka';
+import {Zayavka} from '../classes/Zayavka';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {GetDataService} from './get-data.service';
 import {Houses} from '../classes/Houses';
@@ -12,6 +12,8 @@ import {TypeWork} from '../classes/TypeWork';
 import * as moment from 'moment';
 import {formatDate} from '@angular/common';
 import {Content} from '../classes/Content';
+import {Flats} from '../classes/Flats';
+import {CitizenInfo} from '../classes/CitizenInfo';
 
 @Injectable({
   providedIn: 'root'
@@ -24,16 +26,22 @@ export class DataHandlerService {
   typeList = new BehaviorSubject<TypeWork[]>([]);
   kindList = new BehaviorSubject<KindWork[]>([]);
   zayavkiSubject = new BehaviorSubject<Zayavka[]>([]);
+  currentZayavka = new BehaviorSubject<Zayavka>(new Zayavka());
   currentUser = new BehaviorSubject<User>(new User());
   workers = new BehaviorSubject<User[]>([]);
   masters = new BehaviorSubject<User[]>([]);
   dispatchers = new BehaviorSubject<User[]>([]);
   dispatchersMasters = new BehaviorSubject<User[]>([]);
   contents: Content[];
+  flatsList: Flats[];
+  citizenInfoList: CitizenInfo[];
 
 
   constructor(private getDataService: GetDataService) {
   }
+
+
+  //  Заявки / юзеры
 
   getHttpZayavkiData() {
     this.getDataService.getCurrentUser()
@@ -70,7 +78,21 @@ export class DataHandlerService {
       );
   }
 
-  //  Заявки
+  setCurrentZayavka(zayavka: Zayavka) {
+    return this.currentZayavka.next(zayavka);
+  }
+
+  updateZayavka(code: number, prefix: string, updateFilds: object) {
+    // @ts-ignore
+    let findZayavka: Zayavka = this.zayavkiList.find(zayavki => zayavki.prefix === prefix && zayavki.code === code);
+    let ind = this.zayavkiList.indexOf(findZayavka);
+    Object.keys(updateFilds).forEach(keyUpdates =>
+      Object.keys(findZayavka).forEach(key => key === keyUpdates ? Object(findZayavka)[key] === Object(updateFilds)[key] : '')
+    );
+    console.log(this.zayavkiList);
+    this.zayavkiList.splice(ind, 1, findZayavka);
+    this.zayavkiSubject.next(this.zayavkiList);
+  }
 
   getHttpZayavki() {
     return this.getDataService.getZayavkiList().pipe(
@@ -83,22 +105,28 @@ export class DataHandlerService {
     );
   }
 
-  formatOfDate(dateString: string) {
+  formatOfDateString(dateString: string) {
     let date = moment(dateString, 'DD-MM-YYYY HH:mm').toDate();
     return formatDate(new Date(date), 'dd-MM-yyyy HH:mm', 'en-GB');
   }
 
-  setZayavka(zayavka: Zayavka) {
+  formatOfDate() {
+    return formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-GB');
+  }
+
+  addNewZayavka(zayavka: Zayavka) {
     let listPrefix = this.zayavkiList.filter(z => z.prefix == this.currentUser.getValue().ownPrefix);
     let idZayavaka = Math.max.apply(Math, listPrefix.map(list => list.code)) + 1;
     zayavka.code = idZayavaka;
     // @ts-ignore
     zayavka.prefix = this.currentUser.getValue().ownPrefix;
-    zayavka.dateBegin = this.formatOfDate(formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-GB'));
+    zayavka.dateBegin = this.formatOfDateString(formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-GB'));
     zayavka.status = zayavka.workerId ? 'назначено' : 'принято';
     let momentDate = moment(zayavka.dateBegin, 'DD-MM-YYYY HH:mm').toDate();
     momentDate.setHours(momentDate.getHours() + parseInt(zayavka.time));
     zayavka.dateDeadline = formatDate(momentDate.toString(), 'dd-MM-yyyy HH:mm', 'en-US', '+0500');
+    // @ts-ignore
+    zayavka.address = this.housesList.getValue().find( house => house.houseGuid === zayavka.houseGuid).address;
     this.zayavkiList.push(zayavka);
     console.log(this.zayavkiList);
     this.zayavkiSubject.next(this.zayavkiList);
@@ -111,12 +139,45 @@ export class DataHandlerService {
   // Дома
 
   getHousesList() {
+    this.flatsList = [];
+    this.citizenInfoList = [];
     this.getDataService.getHousesList().subscribe(
       houses => {
         this.housesList.next(houses);
+        this.getFlatsList(houses);
         console.log(this.housesList);
+        houses.forEach(
+          house => {
+            console.log(house);
+            this.getDataService.getFlatsList(house.houseGuid).subscribe(
+              flat => this.flatsList.push(flat)
+            );
+            this.getDataService.getCitizenInfoList(house.houseGuid).subscribe(
+              info => this.citizenInfoList.push(info)
+            );
+          }
+        );
       }
     );
+  }
+
+  // Квартира
+
+  getFlatsList(housesList: Houses[]) {
+    // this.flatsList = [];
+    // this.citizenInfoList = [];
+    // housesList.forEach(
+    //   house => {
+    //     console.log(house);
+    //     this.getDataService.getFlatsList(house.houseGuid).subscribe(
+    //       flat => this.flatsList.push(flat)
+    //     );
+    //     this.getDataService.getCitizenInfoList(house.houseGuid).subscribe(
+    //           info => this.citizenInfoList.push(info)
+    //     );
+    //
+    //   }
+    // );
   }
 
   // Статус
@@ -164,13 +225,12 @@ export class DataHandlerService {
 
   getContentList(type: string, kind: string) {
     console.log(this.contents);
-      if (kind === 'Платная') {
-        return this.contents.filter(content => content.typeWork === type && content.price)
-      }
-      else {
-        return this.contents.filter(content => content.typeWork === type && content.time)
-      }
-    return ;
+    if (kind === 'Платная') {
+      return this.contents.filter(content => content.typeWork === type && content.price);
+    } else {
+      return this.contents.filter(content => content.typeWork === type && content.time);
+    }
+    return;
   }
 
   contentFilter(name: string) {

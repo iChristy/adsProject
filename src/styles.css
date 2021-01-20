@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+html, body { height: 100%; overflow-x: hidden;}
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .display-inbl {
@@ -24,4 +24,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .plat-color {
   color: aquamarine !important;
+}
+.div-top{
+  padding-top: 20px;
+}
+.mat-mini-fab:not([class*=mat-elevation-z]) {
+  box-shadow: none;
 }

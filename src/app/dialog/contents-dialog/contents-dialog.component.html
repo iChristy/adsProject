@@ -1,0 +1,22 @@
+
+  <div class="row justify-content-center">
+    <div class="col full-width">
+      <mat-card style=" margin-top: 0" >
+        <button mat-raised-button color=primary (click)="onConfirm()"> Сохранить изменения</button>
+      </mat-card>
+      <div>
+        <mat-selection-list *ngIf="checkContents && checkContents.length > 0" [(ngModel)]="checkContents" >
+          <mat-divider></mat-divider>
+          <mat-list-option *ngFor="let content of checkContents" [value]="content">
+            {{content.name}}
+          </mat-list-option>
+        </mat-selection-list>
+        <mat-selection-list [(ngModel)]="checkContents" (ngModelChange)="displayContents()">
+          <mat-divider></mat-divider>
+          <mat-list-option *ngFor="let content of tmpContents" [value]="content">
+            {{content.name}} {{content.time}} {{content.price}}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </div>
+  </div>

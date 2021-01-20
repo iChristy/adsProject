@@ -1,22 +1,20 @@
 export class CitizenInfo {
   id: number;
-  fioMain: string;
-  fioContact: string;
+  fioOwner?: string;
+  fioSecondary?: string;
   phone: string;
   email: string;
   houseGuid: string;
-  address: string;
-  flatGuid: string;
+  flatGuid?: string;
   flatNum: string;
 
-  constructor(id: number, fioMain: string, fioContact: string, phone: string, email: string, houseGuid: string, address: string, flatGuid: string, flatNum: string) {
+  constructor(id: number, fioOwner: string, fioSecondary: string, phone: string, email: string, houseGuid: string, flatGuid: string, flatNum: string) {
     this.id = id;
-    this.fioMain = fioMain;
-    this.fioContact = fioContact;
+    this.fioOwner = fioOwner;
+    this.fioSecondary = fioSecondary;
     this.phone = phone;
     this.email = email;
     this.houseGuid = houseGuid;
-    this.address = address;
     this.flatGuid = flatGuid;
     this.flatNum = flatNum;
   }

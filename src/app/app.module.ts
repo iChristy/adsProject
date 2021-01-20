@@ -33,6 +33,12 @@ import { DateDisplayPipe } from './pipe/date-display.pipe';
 import { ContentsDialogComponent } from './dialog/contents-dialog/contents-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {ScrollingModule} from '@angular/cdk/scrolling';
+import { ZayavkiCurrentComponent } from './views/zayavki-current/zayavki-current.component';
+import { ZayavkiEditDialogComponent } from './dialog/zayavki-edit-dialog/zayavki-edit-dialog.component';
+import { ConfirmDialogComponent } from './dialog/confirm-dialog/confirm-dialog.component';
+import { CitizenInfoDialogComponent } from './dialog/citizen-info-dialog/citizen-info-dialog.component';
+import { CancelDialogComponent } from './dialog/cancel-dialog/cancel-dialog.component';
+import { EmployeeEditDialogComponent } from './dialog/employee-edit-dialog/employee-edit-dialog.component';
 
 registerLocaleData(localeRu);
 
@@ -44,7 +50,13 @@ registerLocaleData(localeRu);
     MenuComponent,
     ZayavkiAdditionComponent,
     DateDisplayPipe,
-    ContentsDialogComponent
+    ContentsDialogComponent,
+    ZayavkiCurrentComponent,
+    ZayavkiEditDialogComponent,
+    ConfirmDialogComponent,
+    CitizenInfoDialogComponent,
+    CancelDialogComponent,
+    EmployeeEditDialogComponent
   ],
   imports: [
     BrowserModule,

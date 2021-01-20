@@ -1,0 +1,7 @@
+.card-info {
+  border: 1px solid lightgray;
+}
+.card-info:hover{
+  cursor: pointer;
+  background-color: #535353;
+}
