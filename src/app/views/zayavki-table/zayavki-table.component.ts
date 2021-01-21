@@ -1,7 +1,6 @@
 import {Component, Input, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
-import {MatTableModule} from '@angular/material/table';
 import {Zayavka} from '../../interfaces/Zayavka';
 import {DataHandlerService} from '../../services/data-handler.service';
 import {Subscription} from 'rxjs';

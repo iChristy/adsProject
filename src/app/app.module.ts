@@ -39,6 +39,8 @@ import { ConfirmDialogComponent } from './dialog/confirm-dialog/confirm-dialog.c
 import { CitizenInfoDialogComponent } from './dialog/citizen-info-dialog/citizen-info-dialog.component';
 import { CancelDialogComponent } from './dialog/cancel-dialog/cancel-dialog.component';
 import { EmployeeEditDialogComponent } from './dialog/employee-edit-dialog/employee-edit-dialog.component';
+import { DisconnectionsComponent } from './views/disconnections/disconnections.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 registerLocaleData(localeRu);
 
@@ -56,7 +58,8 @@ registerLocaleData(localeRu);
     ConfirmDialogComponent,
     CitizenInfoDialogComponent,
     CancelDialogComponent,
-    EmployeeEditDialogComponent
+    EmployeeEditDialogComponent,
+    DisconnectionsComponent
   ],
   imports: [
     BrowserModule,
@@ -81,7 +84,8 @@ registerLocaleData(localeRu);
     MatSelectModule,
     MatButtonToggleModule,
     MatDialogModule,
-    ScrollingModule
+    ScrollingModule,
+    DragDropModule
   ],
   providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}],
   bootstrap: [AppComponent],

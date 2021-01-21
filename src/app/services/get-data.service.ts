@@ -13,6 +13,7 @@ import {KindWork} from '../classes/KindWork';
 import {Content} from '../classes/Content';
 import {Flats} from '../classes/Flats';
 import {CitizenInfo} from '../classes/CitizenInfo';
+import {Disconnection} from '../classes/Disconnection';
 
 @Injectable({
   providedIn: 'root'
@@ -69,6 +70,11 @@ export class GetDataService {
 
   getContentList(): Observable<Content[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest?content=1')
+      .pipe(map((response: any) => response));
+  }
+
+  getDisconnections(house: string) : Observable<Disconnection[]> {
+    return this.http.get('http://localhost:8070/Request/ForRequest?disconnection=1')
       .pipe(map((response: any) => response));
   }
 }

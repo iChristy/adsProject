@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import {ZayavkiTableComponent} from './views/zayavki-table/zayavki-table.component';
 import {ZayavkiAdditionComponent} from './views/zayavki-addition/zayavki-addition.component';
 import {ZayavkiCurrentComponent} from './views/zayavki-current/zayavki-current.component';
+import {DisconnectionsComponent} from './views/disconnections/disconnections.component';
 
 const routes: Routes = [{
   path: 'adsTable',
@@ -15,6 +16,10 @@ const routes: Routes = [{
   {
     path: 'adsCurrent',
     component: ZayavkiCurrentComponent
+  },
+  {
+    path: 'adsDisconnections',
+    component: DisconnectionsComponent
   },
   {
     path: '',

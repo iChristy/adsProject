@@ -1,0 +1,148 @@
+<!--<button (click)="show()">123</button>-->
+
+<div class="div-right">
+  <div class="div-padding">
+    <div class="row">
+      <div class="col-md-3 col-12">
+        <ng-template matStepLabel>Информация о заявителе</ng-template>
+        <!--        showTable($event, inputSearchText.value, selectSearchAddress.value, selectSearcStatus.value, selectSearchType.value, selectSearchKind.value)-->
+        <mat-form-field class="example-form-field full-width">
+          <mat-label>
+            <mat-icon>search</mat-icon>
+            Поиск
+          </mat-label>
+          <input #inputSearchText matInput type="text" [(ngModel)]="textSearch"
+                 (keyup)="showTable()"
+                 name="secondStep">
+          <!--        <button mat-button  matSuffix mat-icon-button aria-label="Clear">-->
+          <!--          <mat-icon>close</mat-icon>-->
+          <!--        </button>-->
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Адрес</mat-label>
+          <mat-select [(ngModel)]="addressSearch" #selectSearchAddress
+                      (ngModelChange)="showTable()">
+            <mat-option [value]="null"
+            >
+              Все
+            </mat-option>
+            <mat-option *ngFor="let house of houses" [value]="house.houseGuid">
+              {{house.address}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Статус</mat-label>
+          <mat-select [(ngModel)]="statusSearch" #selectSearcStatus (ngModelChange)="showTable()">
+            <mat-option [value]="null">
+              Все
+            </mat-option>
+            <mat-option *ngFor="let stat of status" [value]="stat.status">
+              {{stat.status}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Тип</mat-label>
+          <mat-select [(ngModel)]="typeSearch" #selectSearchType (ngModelChange)="showTable()">
+            <mat-option style="border-bottom: 1px solid" [value]="null">
+              Все
+            </mat-option>
+            <mat-option *ngFor="let type of types" [value]="type.name">
+              {{type.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Инициатор</mat-label>
+          <mat-select [(ngModel)]="kindSearch" #selectSearchKind (ngModelChange)="showTable()">
+            <mat-option [value]="null">
+              Все
+            </mat-option>
+            <mat-option value="Управляющая компания">
+              Управляющая компания
+            </mat-option>
+            <mat-option value="Сторонняя организация">
+              Сторонняя организация
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+<!--  &lt;!&ndash;  <div class="div-padding">&ndash;&gt;-->
+<!--  &lt;!&ndash;    <div class="row">&ndash;&gt;-->
+<!--  &lt;!&ndash;      <mat-card class="col-2" *ngFor="let stat of status" (loadedmetadata)="checkStat(stat.status)">&ndash;&gt;-->
+<!--  &lt;!&ndash;        <h1>Заявок {{stat.status}}: {{prinStat}}</h1>&ndash;&gt;-->
+<!--  &lt;!&ndash;      </mat-card>&ndash;&gt;-->
+<!--  &lt;!&ndash;    </div>&ndash;&gt;-->
+<!--  &lt;!&ndash;  </div>&ndash;&gt;-->
+
+<table #table class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="number">
+    <th mat-header-cell *matHeaderCellDef id="number_table"> Номер</th>
+    <td mat-cell *matCellDef="let element; let index = index"> {{index + 1}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="address">
+    <th mat-header-cell *matHeaderCellDef id="address_table"> Адрес</th>
+    <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="comment">
+    <th mat-header-cell *matHeaderCellDef id="comment_table"> Комментарий</th>
+    <td mat-cell *matCellDef="let element"> {{element.comment}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="dateStart">
+    <th mat-header-cell *matHeaderCellDef id="date_start_table"> Дата</th>
+    <td mat-cell *matCellDef="let element"> {{element.interval[0]}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="dateEnd">
+    <th mat-header-cell *matHeaderCellDef id="date_end_table"> Дата</th>
+    <td mat-cell *matCellDef="let element"> {{element.interval[0]}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="type" id="type_table">
+    <th mat-header-cell *matHeaderCellDef> Тип</th>
+    <td mat-cell *matCellDef="let element">
+      <mat-icon *ngIf="element.typeWork == 'Сантехнические'"
+      >waves
+      </mat-icon>
+      <mat-icon *ngIf="element.typeWork == 'Электротехнические'"
+      >flash_on
+      </mat-icon>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="initiator" id="initiator_table">
+    <th mat-header-cell *matHeaderCellDef> Инициатор</th>
+    <td mat-cell *matCellDef="let element">
+      <mat-icon *ngIf="element.initiator == 'Сантехнические'"
+      >waves
+      </mat-icon>
+      <mat-icon *ngIf="element.initiator == 'Управляющая компания'"
+      >group
+      </mat-icon>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="active-row">></tr>
+</table>
+
+<mat-paginator [pageSizeOptions]="[10, 50, 100]" showFirstLastButtons></mat-paginator>
+<!--</div>-->

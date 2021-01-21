@@ -1,0 +1,29 @@
+#number_table {
+  width: 10% ;
+}
+#address_table {
+  width: 25% !important;
+}
+#comment_table {
+  width: 32% !important;
+}
+#date_start_table {
+  width: 10% !important;
+}
+#date_end_table {
+  width: 10% !important;
+}
+#type_table {
+  width: 5% !important;
+}
+#initiator_table {
+  width: 7% !important;
+  text-align: center;
+}
+tr.mat-row, tr.mat-footer-row {
+  height: 60px;
+}
+.active-row:hover {
+  background-color: #535353;
+  cursor: pointer;
+}

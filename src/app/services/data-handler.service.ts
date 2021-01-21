@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Zayavka} from '../classes/Zayavka';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {GetDataService} from './get-data.service';
 import {Houses} from '../classes/Houses';
 import {Status} from '../classes/Status';
@@ -14,6 +14,7 @@ import {formatDate} from '@angular/common';
 import {Content} from '../classes/Content';
 import {Flats} from '../classes/Flats';
 import {CitizenInfo} from '../classes/CitizenInfo';
+import {Disconnection} from '../classes/Disconnection';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,7 @@ export class DataHandlerService {
   masters = new BehaviorSubject<User[]>([]);
   dispatchers = new BehaviorSubject<User[]>([]);
   dispatchersMasters = new BehaviorSubject<User[]>([]);
+  disconnectionsList = new ReplaySubject<Disconnection[]>();
   employeeList: User[];
   contents: Content[];
   flatsList: Flats[];
@@ -130,6 +132,7 @@ export class DataHandlerService {
     zayavka.dateDeadline = formatDate(momentDate.toString(), 'dd-MM-yyyy HH:mm', 'en-US', '+0500');
     // @ts-ignore
     zayavka.address = this.housesList.getValue().find( house => house.houseGuid === zayavka.houseGuid).address;
+    zayavka.dispatcherId = this.currentUser.getValue().id;
     this.zayavkiList.push(zayavka);
     console.log(this.zayavkiList);
     this.zayavkiSubject.next(this.zayavkiList);
@@ -157,6 +160,13 @@ export class DataHandlerService {
             );
             this.getDataService.getCitizenInfoList(house.houseGuid).subscribe(
               info => this.citizenInfoList.push(info)
+            );
+            this.getDataService.getDisconnections(house.houseGuid).subscribe(
+              disc => {
+                // @ts-ignore
+                disc.forEach(disc_ => disc_.address = house.address);
+                console.log(disc);
+                this.disconnectionsList.next(disc);}
             );
           }
         );
@@ -252,6 +262,12 @@ export class DataHandlerService {
       }
     );
     return '';
+  }
+
+  // Отключения
+
+  getDisconnectionsList() {
+
   }
 
   // Юзер

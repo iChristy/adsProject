@@ -90,6 +90,7 @@ export class ZayavkiAdditionComponent implements OnInit {
   creationOfZayavka() {
 
     this.dataHandlerService.addNewZayavka(this.zayavka);
+    this.zayavka = new Zayavka();
   }
 
   openContentsDialog() {
