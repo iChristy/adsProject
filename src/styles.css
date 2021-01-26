@@ -18,9 +18,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .tek-color {
   color: lightskyblue !important;
+  transition: color 1.5s ease-out 0.3s;
 }
 .avar-color {
   color: hotpink !important;
+  transition: color 1.5s ease-out 0.3s;
 }
 .plat-color {
   color: aquamarine !important;

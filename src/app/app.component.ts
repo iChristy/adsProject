@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import {DataHandlerService} from './services/data-handler.service';
 import {Zayavka} from './interfaces/Zayavka';
 import {Houses} from './classes/Houses';
+import {elementShow} from './animations';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  animations: [elementShow]
 })
 export class AppComponent implements OnInit{
 
@@ -19,8 +21,8 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.dataHandlerService.getHttpZayavkiData();
     this.dataHandlerService.getHousesList();
+    // this.dataHandlerService.getHttpZayavkiData();
     this.dataHandlerService.getStatusList();
     this.dataHandlerService.getTypeList();
     this.dataHandlerService.getKindList();

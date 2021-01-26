@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
@@ -20,11 +20,12 @@ import {Disconnection} from '../classes/Disconnection';
 })
 export class GetDataService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   getZayavkiList(): Observable<ZayavkaInterface[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest?main=1')
-    .pipe(map((response: any) => response));
+      .pipe(map((response: any) => response));
     //   .pipe(shareReplay());
   }
 
@@ -33,12 +34,12 @@ export class GetDataService {
       .pipe(map((response: any) => response));
   }
 
-  getFlatsList(house: string): Observable<Flats>{
+  getFlatsList(house: string): Observable<Flats> {
     return this.http.get('http://localhost:8070/Request/ForRequest?flats=1&houses=' + house)
       .pipe(map((response: any) => response));
   }
 
-  getCitizenInfoList(house: string): Observable<CitizenInfo>{
+  getCitizenInfoList(house: string): Observable<CitizenInfo> {
     return this.http.get('http://localhost:8070/Request/ForRequest?citizenInfo=1&houses=' + house)
       .pipe(map((response: any) => response));
   }
@@ -73,8 +74,8 @@ export class GetDataService {
       .pipe(map((response: any) => response));
   }
 
-  getDisconnections(house: string) : Observable<Disconnection[]> {
-    return this.http.get('http://localhost:8070/Request/ForRequest?disconnection=1')
+  getDisconnections(companyId: string): Observable<Disconnection[]> {
+    return this.http.get('http://localhost:8070/Request/ForRequest?disconnection=1&companyId=usrCompany')
       .pipe(map((response: any) => response));
   }
 }

@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-3 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Адрес</mat-label>
           <mat-select [(ngModel)]="addressSearch" #selectSearchAddress
@@ -34,7 +34,18 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 col-12">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Выберите интервал дат</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Начальная дата">
+            <input matEndDate placeholder="Конечная дата">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </div>
+      <div class="col-md-2  col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Статус</mat-label>
           <mat-select [(ngModel)]="statusSearch" #selectSearcStatus (ngModelChange)="showTable()">
@@ -47,7 +58,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Тип</mat-label>
           <mat-select [(ngModel)]="typeSearch" #selectSearchType (ngModelChange)="showTable()">
@@ -60,7 +71,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Вид</mat-label>
           <mat-select [(ngModel)]="kindSearch" #selectSearchKind (ngModelChange)="showTable()">
@@ -76,55 +87,62 @@
     </div>
   </div>
 
-<!--  <div class="div-padding">-->
-<!--    <div class="row">-->
-<!--      <mat-card class="col-2" *ngFor="let stat of status" (loadedmetadata)="checkStat(stat.status)">-->
-<!--        <h1>Заявок {{stat.status}}: {{prinStat}}</h1>-->
-<!--      </mat-card>-->
-<!--    </div>-->
-<!--  </div>-->
+  <!--  <div class="div-padding">-->
+  <!--    <div class="row">-->
+  <!--      <mat-card class="col-2" *ngFor="let stat of status" (loadedmetadata)="checkStat(stat.status)">-->
+  <!--        <h1>Заявок {{stat.status}}: {{prinStat}}</h1>-->
+  <!--      </mat-card>-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <div *ngIf="!checkLoadling" class="spinners">
+    <div class="spinner1">
+    </div>
+    <div class="spinner2">
+    </div>
+  </div>
 
-  <table #table class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <table #table @triggerShow *ngIf="checkLoadling" class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-    <ng-container matColumnDef="number">
-      <th mat-header-cell *matHeaderCellDef (click)="showTable()"> Номер</th>
-      <td mat-cell *matCellDef="let element"> {{element.prefix}}-{{element.code}} </td>
-    </ng-container>
+      <ng-container matColumnDef="number">
+        <th mat-header-cell *matHeaderCellDef (click)="showTable()"> Номер</th>
+        <td mat-cell *matCellDef="let element"> {{element.prefix}}-{{element.code}} </td>
+      </ng-container>
 
-    <ng-container matColumnDef="address">
-      <th mat-header-cell *matHeaderCellDef> Адрес</th>
-      <td mat-cell *matCellDef="let element"> {{element.address}} </td>
-    </ng-container>
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef> Адрес</th>
+        <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+      </ng-container>
 
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> Статус</th>
-      <td mat-cell *matCellDef="let element"> {{element.status}} </td>
-    </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Статус</th>
+        <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+      </ng-container>
 
-    <ng-container matColumnDef="dateBegin">
-      <th mat-header-cell *matHeaderCellDef> Дата</th>
-      <td mat-cell *matCellDef="let element"> {{element.dateBegin | dateDisplay}} </td>
-    </ng-container>
+      <ng-container matColumnDef="dateBegin">
+        <th mat-header-cell *matHeaderCellDef> Дата</th>
+        <td mat-cell *matCellDef="let element"> {{element.dateBegin | dateDisplay}} </td>
+      </ng-container>
 
-    <ng-container matColumnDef="kind">
-      <th mat-header-cell *matHeaderCellDef> Вид</th>
-      <td mat-cell *matCellDef="let element">
-<!--      <a routerLink ="/adsAdd">-->
-        <mat-icon *ngIf="element.typeWork == 'Сантехнические'"
-                  [ngClass]="{'tek-color': element.kindWork === 'Текущая', 'avar-color': element.kindWork === 'Аварийная', 'plat-color': element.kindWork === 'Платная'}"
-        >waves
-        </mat-icon>
-        <mat-icon *ngIf="element.typeWork == 'Электротехнические'"
-                  [ngClass]="{'tek-color': element.kindWork === 'Текущая', 'avar-color': element.kindWork === 'Аварийная', 'plat-color': element.kindWork === 'Платная'}"
-        >flash_on
-        </mat-icon>
-<!--      </a>-->
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="kind">
+        <th mat-header-cell *matHeaderCellDef> Вид</th>
+        <td mat-cell *matCellDef="let element">
+          <!--      <a routerLink ="/adsAdd">-->
+          <mat-icon *ngIf="element.typeWork == 'Сантехнические'"
+                    [ngClass]="{'tek-color': element.kindWork === 'Текущая', 'avar-color': element.kindWork === 'Аварийная', 'plat-color': element.kindWork === 'Платная'}"
+          >waves
+          </mat-icon>
+          <mat-icon *ngIf="element.typeWork == 'Электротехнические'"
+                    [ngClass]="{'tek-color': element.kindWork === 'Текущая', 'avar-color': element.kindWork === 'Аварийная', 'plat-color': element.kindWork === 'Платная'}"
+          >flash_on
+          </mat-icon>
+          <!--      </a>-->
+        </td>
+      </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="active-row" (click)="navigate(row)">></tr>
-  </table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="active-row" (click)="navigate(row)">></tr>
+    </table>
 
-  <mat-paginator [pageSizeOptions]="[10, 50, 100]" showFirstLastButtons></mat-paginator>
+    <mat-paginator  [pageSizeOptions]="[10, 50, 100]" showFirstLastButtons></mat-paginator>
+
 </div>

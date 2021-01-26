@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-3 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Адрес</mat-label>
           <mat-select [(ngModel)]="addressSearch" #selectSearchAddress
@@ -36,20 +36,18 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 col-12">
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Статус</mat-label>
-          <mat-select [(ngModel)]="statusSearch" #selectSearcStatus (ngModelChange)="showTable()">
-            <mat-option [value]="null">
-              Все
-            </mat-option>
-            <mat-option *ngFor="let stat of status" [value]="stat.status">
-              {{stat.status}}
-            </mat-option>
-          </mat-select>
+          <mat-label>Выберите интервал дат</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Начальная дата">
+            <input matEndDate placeholder="Конечная дата">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Тип</mat-label>
           <mat-select [(ngModel)]="typeSearch" #selectSearchType (ngModelChange)="showTable()">
@@ -62,10 +60,10 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Инициатор</mat-label>
-          <mat-select [(ngModel)]="kindSearch" #selectSearchKind (ngModelChange)="showTable()">
+          <mat-select [(ngModel)]="initiatorSearch" #selectSearchKind (ngModelChange)="showTable()">
             <mat-option [value]="null">
               Все
             </mat-option>
@@ -89,7 +87,7 @@
 <!--  &lt;!&ndash;    </div>&ndash;&gt;-->
 <!--  &lt;!&ndash;  </div>&ndash;&gt;-->
 
-<table #table class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+<table #table @triggerElementShow class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
   <ng-container matColumnDef="number">
     <th mat-header-cell *matHeaderCellDef id="number_table"> Номер</th>
@@ -125,17 +123,23 @@
       <mat-icon *ngIf="element.typeWork == 'Электротехнические'"
       >flash_on
       </mat-icon>
+      <mat-icon *ngIf="element.typeWork == 'Благоустройство, мусоропроводы'"
+      >local_florist
+      </mat-icon>
+      <mat-icon *ngIf="element.typeWork == 'Конструктивные элементы'"
+      >house
+      </mat-icon>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="initiator" id="initiator_table">
     <th mat-header-cell *matHeaderCellDef> Инициатор</th>
     <td mat-cell *matCellDef="let element">
-      <mat-icon *ngIf="element.initiator == 'Сантехнические'"
-      >waves
+      <mat-icon *ngIf="element.initiator == 'Сторонняя организация'"
+      >groups
       </mat-icon>
       <mat-icon *ngIf="element.initiator == 'Управляющая компания'"
-      >group
+      >location_city
       </mat-icon>
     </td>
   </ng-container>

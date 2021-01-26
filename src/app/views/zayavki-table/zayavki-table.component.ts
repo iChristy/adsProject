@@ -9,12 +9,14 @@ import {Status} from '../../classes/Status';
 import {TypeWork} from '../../classes/TypeWork';
 import {KindWork} from '../../classes/KindWork';
 import {Routes, RouterModule, Router} from '@angular/router';
+import {tableShow} from './zayavki-table-animations';
 
 
 @Component({
   selector: 'app-zayavki-table',
   templateUrl: './zayavki-table.component.html',
-  styleUrls: ['./zayavki-table.component.css']
+  styleUrls: ['./zayavki-table.component.css'],
+  animations: [tableShow]
 })
 export class ZayavkiTableComponent implements OnInit {
   displayedColumns: string[] = ['number', 'address', 'status', 'dateBegin', 'kind'];
@@ -35,13 +37,18 @@ export class ZayavkiTableComponent implements OnInit {
   statusSearch: string;
   textSearch: string;
   prinStat: number;
+  checkLoadling: boolean = false;
 
   constructor(private dataHandlerService: DataHandlerService, private router: Router) {
   }
 
   ngOnInit(): void {
     this.subscription = this.dataHandlerService.zayavkiSubject.subscribe(zayavki => {
+      // setTimeout(() => {
+      //   this.checkLoadling = true;
+      // }, 3000);
       this.zayavki = zayavki;
+      this.checkLoadling = true;
       this.updateDataTable();
     });
     this.dataHandlerService.housesList.subscribe(
@@ -65,8 +72,8 @@ export class ZayavkiTableComponent implements OnInit {
   }
 
   showTable() {
-        this.zayavki = this.dataHandlerService.filters(this.textSearch, this.addressSearch, this.statusSearch, this.typeSearch, this.kindSearch);
-        this.updateDataTable();
+    this.zayavki = this.dataHandlerService.filters(this.textSearch, this.addressSearch, this.statusSearch, this.typeSearch, this.kindSearch);
+    this.updateDataTable();
   }
 
   checkStat(status: string) {
@@ -78,7 +85,6 @@ export class ZayavkiTableComponent implements OnInit {
     this.dataHandlerService.setCurrentZayavka(zayavka);
     this.router.navigate(['/adsCurrent']);
   }
-
 
 
 }

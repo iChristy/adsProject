@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Zayavka} from '../classes/Zayavka';
-import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, forkJoin, Observable, of, ReplaySubject} from 'rxjs';
 import {GetDataService} from './get-data.service';
 import {Houses} from '../classes/Houses';
 import {Status} from '../classes/Status';
-import {filter, map} from 'rxjs/operators';
+import {filter, map, mergeMap} from 'rxjs/operators';
 import {Company} from '../classes/Company';
 import {User} from '../classes/User';
 import {KindWork} from '../classes/KindWork';
@@ -22,6 +22,7 @@ import {Disconnection} from '../classes/Disconnection';
 export class DataHandlerService {
 
   zayavkiList: Zayavka[];
+  disconnectionsList: Disconnection[];
   housesList = new BehaviorSubject<Houses[]>([]);
   statusList = new BehaviorSubject<Status[]>([]);
   typeList = new BehaviorSubject<TypeWork[]>([]);
@@ -33,7 +34,7 @@ export class DataHandlerService {
   masters = new BehaviorSubject<User[]>([]);
   dispatchers = new BehaviorSubject<User[]>([]);
   dispatchersMasters = new BehaviorSubject<User[]>([]);
-  disconnectionsList = new ReplaySubject<Disconnection[]>();
+  disconnectionsSubject = new BehaviorSubject<Disconnection[]>([]);
   employeeList: User[];
   contents: Content[];
   flatsList: Flats[];
@@ -59,25 +60,60 @@ export class DataHandlerService {
           this.dispatchersMasters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcherMaster'));
           // @ts-ignore
           this.employeeList = user.filter(user => user.companyId === currentUser.companyId);
-
+          console.log('currentUser');
           if (currentUser) {
             this.currentUser.next(currentUser);
 
+            // @ts-ignore
             this.getDataService.getCurrentCompany()
               .pipe(
-                map(data => data.filter(data => data.companyId === currentUser?.companyId)
-                )).subscribe(
-              company => {
-                return this.getDataService.getZayavkiList().pipe(
-                  map(data => data.filter(data => data.companyId === company[0].companyId)
-                  )).subscribe(
-                  zayavki => {
-                    this.zayavkiList = zayavki;
-                    this.zayavkiSubject.next(this.zayavkiList);
+                // @ts-ignore
+                map(data => {
+                    const company = data.find(data => data.companyId === currentUser?.companyId);
+                    return company;
                   }
-                );
+                ),
+                mergeMap((company: Company) => {
+                  console.log(company);
+                  const zayav = this.getDataService.getZayavkiList().pipe(
+                    map(data => data.filter(data => data.companyId === company.companyId))
+                  );
+                  const disc = this.getDataService.getDisconnections(company.companyId).pipe(
+                    map(disc => {
+                      console.log(this.housesList.getValue());
+                      this.housesList.getValue().forEach(house =>
+                        disc.forEach(data => {
+                          console.log(`${data.houseGuid} --  ${house.houseGuid}`);
+                          if (data.houseGuid === house.houseGuid)
+                        {
+
+                          data.address = house.address
+                        }}));
+                      console.log(disc);
+                      return disc;
+                    }
+                  ));
+                  return forkJoin([zayav, disc]);
+                })
+              ).subscribe(
+              result => {
+                this.zayavkiList = result[0];
+                this.zayavkiSubject.next(this.zayavkiList);
+                this.disconnectionsSubject.next(result[1]);
+                console.log(this.disconnectionsSubject);
               }
             );
+
+            // return this.getDataService.getZayavkiList().pipe(
+            //   map(data => data.filter(data => data.companyId === company[0].companyId)
+            //   )).subscribe(
+            //   zayavki => {
+            //     this.zayavkiList = zayavki;
+            //     this.zayavkiSubject.next(this.zayavkiList);
+            //   }
+            // );
+
+            ;
           }
         }
       );
@@ -131,7 +167,7 @@ export class DataHandlerService {
     momentDate.setHours(momentDate.getHours() + parseInt(zayavka.time));
     zayavka.dateDeadline = formatDate(momentDate.toString(), 'dd-MM-yyyy HH:mm', 'en-US', '+0500');
     // @ts-ignore
-    zayavka.address = this.housesList.getValue().find( house => house.houseGuid === zayavka.houseGuid).address;
+    zayavka.address = this.housesList.getValue().find(house => house.houseGuid === zayavka.houseGuid).address;
     zayavka.dispatcherId = this.currentUser.getValue().id;
     this.zayavkiList.push(zayavka);
     console.log(this.zayavkiList);
@@ -154,20 +190,22 @@ export class DataHandlerService {
         console.log(this.housesList);
         houses.forEach(
           house => {
-            console.log(house);
             this.getDataService.getFlatsList(house.houseGuid).subscribe(
               flat => this.flatsList.push(flat)
             );
             this.getDataService.getCitizenInfoList(house.houseGuid).subscribe(
               info => this.citizenInfoList.push(info)
             );
-            this.getDataService.getDisconnections(house.houseGuid).subscribe(
-              disc => {
-                // @ts-ignore
-                disc.forEach(disc_ => disc_.address = house.address);
-                console.log(disc);
-                this.disconnectionsList.next(disc);}
-            );
+            this.getHttpZayavkiData();
+            // this.getDataService.getDisconnections(house.houseGuid, house.address).subscribe(
+            //   disc => {
+            //     // @ts-ignore
+            //     // disc.forEach(disc_ => { if (disc_.houseGuid === house.houseGuid) { disc_.address = house.address}});
+            //     console.log(disc);
+            //     this.disconnectionsSubject.next(disc);
+            //     this.disconnectionsList = disc;
+            //   }
+            // );
           }
         );
       }
@@ -309,6 +347,36 @@ export class DataHandlerService {
 
     return filterZayavki;
   }
+
+
+  // Фильтр
+
+  filtersDisconnections(text?: string, houseGuid?: string, type?: string, interval?: string, initiator?: string) {
+    console.log(`${text} - ${houseGuid} - ${type} - ${interval} - ${initiator}`);
+    let filterDisconnections = this.disconnectionsList;
+    if (text !== undefined && text !== '') {
+      // @ts-ignore
+      filterDisconnections = filterDisconnections.filter(disconnection => disconnection.address.toUpperCase().includes(<string> text?.toUpperCase()));
+    }
+    // if (kind !== null && kind !== undefined && kind !== '') {
+    //   filterZayavki = filterZayavki.filter(z => z.kindWork === kind);
+    // }
+    if (type !== null && type !== undefined && type !== '') {
+      filterDisconnections = filterDisconnections.filter(d => d.typeWork === type);
+    }
+    if (houseGuid !== undefined && houseGuid !== null && houseGuid !== '') {
+      console.log(filterDisconnections);
+      console.log(houseGuid);
+      filterDisconnections = filterDisconnections.filter(d => d.houseGuid === houseGuid);
+
+    }
+    if (initiator !== undefined && initiator !== null && initiator !== '') {
+      filterDisconnections = filterDisconnections.filter(d => d.initiator === initiator);
+    }
+    return filterDisconnections;
+  }
+
+
 }
 
 

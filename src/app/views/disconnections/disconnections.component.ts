@@ -8,11 +8,14 @@ import {TypeWork} from '../../classes/TypeWork';
 import {DataHandlerService} from '../../services/data-handler.service';
 import {Disconnection} from '../../classes/Disconnection';
 import {MatPaginator} from '@angular/material/paginator';
+import {elementShow} from '../../animations';
+import {FormControl, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-disconnections',
   templateUrl: './disconnections.component.html',
-  styleUrls: ['./disconnections.component.css']
+  styleUrls: ['./disconnections.component.css'],
+  animations: [elementShow]
 })
 export class DisconnectionsComponent implements OnInit {
 
@@ -23,22 +26,30 @@ export class DisconnectionsComponent implements OnInit {
   houses: Houses[];
   types: TypeWork[];
 
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl()
+  });
+
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
-  addressSearch: string;
-  kindSearch: string;
-  typeSearch: string;
-  statusSearch: string;
-  textSearch: string;
+  addressSearch: string = '';
+  kindSearch: string = '';
+  typeSearch: string = '';
+  statusSearch: string = '';
+  textSearch: string = '';
   status: Status[];
+  intervalSearch: string = '';
+  initiatorSearch: string = '';
 
 
   constructor(private dataHandlerService: DataHandlerService) {
   }
 
   ngOnInit(): void {
-    this.dataHandlerService.disconnectionsList.subscribe(disc => {
+    this.dataHandlerService.disconnectionsSubject.subscribe(disc => {
       this.disconnections = disc;
+      this.dataHandlerService.filtersDisconnections();
       this.updateDataTable();
     });
     this.dataHandlerService.housesList.subscribe(
@@ -57,8 +68,8 @@ export class DisconnectionsComponent implements OnInit {
   }
 
   showTable() {
-    // this.zayavki = this.dataHandlerService.filters(this.textSearch, this.addressSearch, this.statusSearch, this.typeSearch, this.kindSearch);
-    // this.updateDataTable();
+    this.disconnections = this.dataHandlerService.filtersDisconnections(this.textSearch, this.addressSearch, this.typeSearch, this.intervalSearch, this.initiatorSearch);
+    this.updateDataTable();
   }
 
   private updateDataTable() {

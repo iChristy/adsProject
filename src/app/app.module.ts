@@ -41,6 +41,8 @@ import { CancelDialogComponent } from './dialog/cancel-dialog/cancel-dialog.comp
 import { EmployeeEditDialogComponent } from './dialog/employee-edit-dialog/employee-edit-dialog.component';
 import { DisconnectionsComponent } from './views/disconnections/disconnections.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
 
 registerLocaleData(localeRu);
 
@@ -85,9 +87,11 @@ registerLocaleData(localeRu);
     MatButtonToggleModule,
     MatDialogModule,
     ScrollingModule,
-    DragDropModule
+    MatDatepickerModule,
+    MatNativeDateModule
+    // DragDropModule
   ],
-  providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}],
+  providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}, MatDatepickerModule],
   bootstrap: [AppComponent],
   entryComponents: [
     ContentsDialogComponent

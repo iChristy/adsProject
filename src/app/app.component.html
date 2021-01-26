@@ -2,7 +2,7 @@
 
   <mat-sidenav-container class="row example-container">
 
-      <mat-sidenav #sidenav mode="side" class="col-sm-4 col-md-2 col-11 display-inbl" [(opened)]="opened" (opened)="events.push('open!')"
+      <mat-sidenav #sidenav @triggerElementShow mode="side" class="col-sm-4 col-md-2 col-11 display-inbl" [(opened)]="opened" (opened)="events.push('open!')"
                    (closed)="events.push('close!')">
         <app-menu></app-menu>
       </mat-sidenav>
