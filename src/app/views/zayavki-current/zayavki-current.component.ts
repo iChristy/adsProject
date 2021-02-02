@@ -47,19 +47,19 @@ export class ZayavkiCurrentComponent implements OnInit {
   openContentsDialog() {
     let dialogRef = this.dialog.open(ContentsDialogComponent, {
       width: '700px !important',
-      height: '60%', data: [this.zayavka.typeWork, this.zayavka.kindWork, (this.zayavka.contents.toString()).split(',')], autoFocus: false
+      height: '60%', data: [this.zayavka.typeWork, this.zayavka.kindWork, (this.zayavka.services.toString()).split(',')], autoFocus: false
     });
 
     let timeArray: number[] = [];
 
     dialogRef.afterClosed().subscribe(result => {
-        this.zayavka.contents = [];
+        this.zayavka.services = [];
         if (result) {
-          this.zayavka.contents = [];
-          result[0].forEach((r: { name: string; }) => this.zayavka.contents.push(r.name));
+          this.zayavka.services = [];
+          result[0].forEach((r: { name: string; }) => this.zayavka.services.push(r.name));
           this.zayavka.time = result[1];
           this.zayavka.price = result[2];
-          let updateFields = {'contents': this.zayavka.contents, 'time': this.zayavka.time, 'price': this.zayavka.price};
+          let updateFields = {'contents': this.zayavka.services, 'time': this.zayavka.time, 'price': this.zayavka.price};
           this.dataHandlerService.updateZayavka(this.zayavka.code, this.zayavka.prefix, updateFields);
         }
       }
@@ -95,8 +95,8 @@ export class ZayavkiCurrentComponent implements OnInit {
           if (fieldName === 'workerId') {
             if (this.zayavka.status === 'принято') {
               this.zayavka.status = 'назначено';
-              this.zayavka.dateWorkOn = this.dataHandlerService.formatOfDate();
-              updateFields = {fieldName: result[0], 'status': this.zayavka.status, 'dateWorkOn': this.zayavka.dateWorkOn};
+              this.zayavka.dateWorkStart = this.dataHandlerService.formatOfDate();
+              updateFields = {fieldName: result[0], 'status': this.zayavka.status, 'dateWorkOn': this.zayavka.dateWorkStart};
             } else {
               updateFields = {fieldName: result[0]};
             }

@@ -9,9 +9,10 @@
 .zagolovok-pad {
   padding-top: 10px;
 }
-.align-center {
-  text-align: center;
-}
 .icon-size {
   /*size: 40px;*/
+}
+.card-padding {
+  padding-left: 5px;
+  padding-right: 5px;
 }

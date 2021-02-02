@@ -11,14 +11,14 @@ export interface ZayavkaInterface {
   flatNum: string;
   kindWork: string;
   typeWork: string;
-  contents: Array<string>;
+  services: Array<string>;
   time: string;
   comment: string;
   status: string;
   dateBegin: string;
   dateComplete: string;
-  dateWorkOff: string;
-  dateWorkOn: string;
+  dateWorkEnd: string;
+  dateWorkStart: string;
   dateDeadline: string;
   dispatcherId: string;
   masterId: string;

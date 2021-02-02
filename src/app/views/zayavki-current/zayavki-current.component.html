@@ -44,8 +44,8 @@
   </div>
 
   <div class="row justify-content-around">
-    <div class="col-md-3 col-12">
-      <mat-card style="text-align: center">
+    <div class="col-md-3 col-12  card-padding">
+      <mat-card class="full-width align-center">
         <mat-card-subtitle>
           Время создания
         </mat-card-subtitle>
@@ -55,8 +55,8 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
-      <mat-card style="text-align: center">
+    <div class="col-md-3 col-12  card-padding">
+      <mat-card class="full-width align-center">
         <mat-card-subtitle>
           Часов на выполнение
         </mat-card-subtitle>
@@ -66,8 +66,8 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
-      <mat-card style="text-align: center">
+    <div class="col-md-3 col-12 card-padding">
+      <mat-card class="full-width align-center">
         <mat-card-subtitle>
           Сроки выполнения
         </mat-card-subtitle>
@@ -77,8 +77,8 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
-      <mat-card style="text-align: center">
+    <div class="col-md-3 col-12 card-padding">
+      <mat-card class="full-width align-center">
         <mat-card-subtitle>
           Время выполения
         </mat-card-subtitle>
@@ -89,8 +89,8 @@
     </div>
   </div>
 
-  <div class="row justify-content-around div-top">
-    <div class="col-md-6 col-12">
+  <div class="row justify-content-around div-top-min">
+    <div class="col-md-6 col-12  card-padding">
       <mat-card>
         <mat-card-subtitle>
           Адрес
@@ -101,8 +101,8 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
-      <mat-card>
+    <div class="col-md-3 col-12 card-padding">
+      <mat-card class="full-width align-center">
         <mat-card-subtitle>
           Статус
         </mat-card-subtitle>
@@ -112,8 +112,8 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
-      <mat-card>
+    <div class="col-md-3 col-12  card-padding">
+      <mat-card class="full-width align-center">
         <mat-card-subtitle>
           Сумма
         </mat-card-subtitle>
@@ -124,18 +124,18 @@
     </div>
   </div>
 
-  <div class="row justify-content-around div-top">
-    <div class="col-md-6 col-12">
+  <div class="row justify-content-around div-top-min">
+    <div class="col-md-6 col-12  card-padding">
       <mat-card class="active-card" (click)="openContentsDialog()">
         <mat-card-subtitle>
           Содержание
         </mat-card-subtitle>
         <mat-card-content>
-          {{zayavka.contents ? zayavka.contents : '---'}}
+          {{zayavka.services ? zayavka.services : '---'}}
         </mat-card-content>
       </mat-card>
     </div>
-    <div class="col-md-6 col-12">
+    <div class="col-md-6 col-12  card-padding">
       <mat-card class="active-card"
                 (click)="openEditDialog('Редактирование примечания', 'Примечание', 'comment', zayavka.comment)">
         <mat-card-subtitle>
@@ -148,8 +148,8 @@
     </div>
   </div>
 
-  <div class="row justify-content-around div-top">
-    <div class="col-md-6">
+  <div class="row justify-content-around div-top-min">
+    <div class="col-md-6  card-padding">
       <mat-card class="active-card"
                 (click)="openEditDialog('Редактирование работ', 'Работы', 'actions', zayavka.actions)">
         <mat-card-subtitle>
@@ -161,7 +161,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-6  card-padding">
       <mat-card class="active-card"
                 (click)="openEditDialog('Редактирование материалов', 'Материалы', 'materials', zayavka.materials)">
         <mat-card-subtitle>
@@ -174,16 +174,16 @@
     </div>
   </div>
 
-  <div class="row justify-content-around div-top">
+  <div class="row justify-content-around div-top-min">
     <div class="col-md-3 col-12 align-center">
       <mat-card-subtitle>
       </mat-card-subtitle>
       <mat-card-content>
-        <h2 class="zagolovok-pad">Заявитель</h2>
+        <h3 class="zagolovok-pad">Заявитель</h3>
       </mat-card-content>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12  card-padding">
       <mat-card>
         <mat-card-subtitle>
           Имя
@@ -194,7 +194,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12  card-padding">
       <mat-card>
         <mat-card-subtitle>
           Телефон
@@ -205,7 +205,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12  card-padding">
       <mat-card>
         <mat-card-subtitle>
           Email
@@ -217,16 +217,16 @@
     </div>
   </div>
 
-  <div class="row justify-content-around div-top">
+  <div class="row justify-content-around div-top-min">
     <div class="col-md-3 col-12 align-center">
       <mat-card-subtitle>
       </mat-card-subtitle>
       <mat-card-content>
-        <h2 class="zagolovok-pad">Диспетчер</h2>
+        <h3 class="zagolovok-pad">Диспетчер</h3>
       </mat-card-content>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12  card-padding">
       <mat-card>
         <mat-card-subtitle>
           Имя
@@ -237,7 +237,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card>
         <mat-card-subtitle>
           Телефон
@@ -248,7 +248,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card>
         <mat-card-subtitle>
           Специальность
@@ -260,16 +260,16 @@
     </div>
   </div>
 
-  <div class="row justify-content-around div-top">
+  <div class="row justify-content-around div-top-min">
     <div class="col-md-3 col-12 align-center">
       <mat-card-subtitle>
       </mat-card-subtitle>
       <mat-card-content>
-        <h2 class="zagolovok-pad">Мастер</h2>
+        <h3 class="zagolovok-pad">Мастер</h3>
       </mat-card-content>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card class="active-card" (click)="openEditEmpoyeeDialog('Редактирование мастера', 'Мастер', 'masterId', zayavka.masterId, zayavka.typeWork)">
         <mat-card-subtitle>
           Имя
@@ -280,7 +280,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card>
         <mat-card-subtitle>
           Телефон
@@ -291,7 +291,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card>
         <mat-card-subtitle>
           Специальность
@@ -303,16 +303,16 @@
     </div>
   </div>
 
-  <div class="row justify-content-around div-top">
+  <div class="row justify-content-around div-top-min">
     <div class="col-md-3 col-12 align-center">
       <mat-card-subtitle>
       </mat-card-subtitle>
       <mat-card-content>
-        <h2 class="zagolovok-pad">Рабочий</h2>
+        <h3 class="zagolovok-pad">Рабочий</h3>
       </mat-card-content>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card class="active-card" (click)="openEditEmpoyeeDialog('Редактирование рабочего', 'Рабочий', 'workerId', zayavka.workerId, zayavka.typeWork)">
         <mat-card-subtitle>
           Имя
@@ -323,7 +323,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card>
         <mat-card-subtitle>
           Телефон
@@ -334,7 +334,7 @@
       </mat-card>
     </div>
 
-    <div class="col-md-3 col-12">
+    <div class="col-md-3 col-12 card-padding">
       <mat-card>
         <mat-card-subtitle>
           Специальность

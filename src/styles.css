@@ -26,10 +26,28 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .plat-color {
   color: aquamarine !important;
+  transition: color 1.5s ease-out 0.3s;
 }
 .div-top{
   padding-top: 20px;
 }
 .mat-mini-fab:not([class*=mat-elevation-z]) {
   box-shadow: none;
+}
+.option-all {
+  border-bottom: 1px solid;
+}
+.div-top-min {
+  padding-top: 5px;
+}
+.align-center {
+  text-align: center;
+}
+
+element.style {
+}
+.alert-danger {
+  color: #6c757d;
+  border-color: #f44336;
+  background-color: transparent;
 }

@@ -15,14 +15,25 @@ import {Content} from '../classes/Content';
 import {Flats} from '../classes/Flats';
 import {CitizenInfo} from '../classes/CitizenInfo';
 import {Disconnection} from '../classes/Disconnection';
+import {ZayavkaInterface} from '../interfaces/ZayavkaInterface';
+import {WebSocketService} from './web-socket.service';
+import {Sending} from '../classes/Sending';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataHandlerService {
 
-  zayavkiList: Zayavka[];
-  disconnectionsList: Disconnection[];
+  webSocketURL: string = 'ws://10.10.10.41:8097/wsSocket/ws/';
+  idUser: string = 'PDCvH0p7BT';
+
+  zayavkiList: Zayavka[] = [];
+  disconnectionsList: Disconnection[] = [];
+  employeeList: User[] = [];
+  contents: Content[] = [];
+  flatsList: Flats[] = [];
+  citizenInfoList: CitizenInfo[] = [];
+
   housesList = new BehaviorSubject<Houses[]>([]);
   statusList = new BehaviorSubject<Status[]>([]);
   typeList = new BehaviorSubject<TypeWork[]>([]);
@@ -35,115 +46,276 @@ export class DataHandlerService {
   dispatchers = new BehaviorSubject<User[]>([]);
   dispatchersMasters = new BehaviorSubject<User[]>([]);
   disconnectionsSubject = new BehaviorSubject<Disconnection[]>([]);
-  employeeList: User[];
-  contents: Content[];
-  flatsList: Flats[];
-  citizenInfoList: CitizenInfo[];
+  flatsSubject = new BehaviorSubject<Flats[]>([]);
+  citizenInfoSubject = new BehaviorSubject<CitizenInfo[]>([]);
 
 
-  constructor(private getDataService: GetDataService) {
+  constructor(private getDataService: GetDataService, private webSocketService: WebSocketService) {
   }
 
+  // webSocket
 
-  //  Заявки / юзеры
+  connectToWebSocket() {
+    this.webSocketService.createObservableSocket(this.webSocketURL + this.idUser).subscribe(ws => {
+      let wsJSON: Sending = JSON.parse(ws);
+      console.log(wsJSON);
+      let wsType: string = wsJSON.type;
+      let wsAction: string = wsJSON.action;
+      console.log(wsJSON.content[0]);
+      let wsContent: any = JSON.parse(wsJSON.content[0]);
+      switch (wsType) {
+        case 'MESSAGE' :
+          console.log('message');
+          this.wsZayavki(wsAction, wsContent);
+          break;
+        default :
+          console.log();
+          break;
+      }
+    }, error => {
+      console.log(error)
+    });
+  }
+
+  wsZayavki(action_: string, content_: any) {
+    switch (action_) {
+      case 'CREATE' : {
+        this.zayavkiList.push(content_);
+        this.zayavkiSubject.next(this.zayavkiList);
+        break;
+      }
+      case 'UPDATE' : {
+        this.wsZayavkiUpdate(content_);
+        break;
+      }
+      default: {
+        console.log('def');
+        break;
+      }
+    }
+  }
+
+  wsZayavkiUpdate(content_: any) {
+    let updateContent = content_;
+    let updateCode = -1;
+    let updatePrefix = '';
+    Object.keys(updateContent).forEach(key => {
+      switch (key) {
+        case 'code' : {
+          updateCode = Object(updateContent)[key];
+          delete Object(updateContent)[key];
+          break;
+        }
+        case 'prefix' : {
+          updatePrefix = Object(updateContent)[key];
+          delete Object(updateContent)[key];
+          break;
+        }
+        default:
+          break;
+      }
+    });
+    this.updateZayavka(updateCode, updatePrefix, updateContent);
+  }
+
+  // send
+
+  sendNewZayavka() {
+    let stringSending = JSON.stringify({from: this.idUser, to: ['2'], content: [ZayavkaNew], action: 'CREATE', type: 'MESSAGE'});
+    console.log(stringSending);
+    this.webSocketService.sendMessage(stringSending);
+  }
+
+  // Дома /  статусы / типы / контенты / виды
+
+  getHousesList() {
+    this.flatsList = [];
+    this.citizenInfoList = [];
+
+    this.getDataService.getHousesList()
+      .pipe(mergeMap(
+        (houses_: Houses[]) => {
+          // дома
+          this.housesList.next(houses_);
+          // контенты
+          const contents_ = this.getDataService.getContentList();
+          // статус
+          const status_ = this.getDataService.getStatusList();
+          // типы
+          const type_ = this.getDataService.getTypeList();
+          // виды
+          const kind_ = this.getDataService.getKindList();
+          return forkJoin([contents_, status_, type_, kind_]);
+        }
+      ))
+      .subscribe(
+        result => {
+          this.contents = result[0];
+          this.statusList.next(result[1]);
+          this.typeList.next(result[2]);
+          this.kindList.next(result[3]);
+          this.getHttpZayavkiData();
+        }
+      );
+  }
+
+  //  Заявки / юзеры / компания / отключения / квартиры / инфо
 
   getHttpZayavkiData() {
     this.getDataService.getCurrentUser()
       .subscribe(
         user => {
           console.log(user);
-
-          let currentUser = user.find(data => data.id === 'PDCvH0p7BT');
-          this.workers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'worker'));
-          this.masters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'master'));
-          this.dispatchers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcher'));
-          this.dispatchersMasters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcherMaster'));
-          // @ts-ignore
-          this.employeeList = user.filter(user => user.companyId === currentUser.companyId);
-          console.log('currentUser');
+          let currentUser = user.find(data => data.id === this.idUser);
+          this.displayUsers(user, currentUser!);
           if (currentUser) {
             this.currentUser.next(currentUser);
-
-            // @ts-ignore
             this.getDataService.getCurrentCompany()
               .pipe(
-                // @ts-ignore
+                // компания
                 map(data => {
                     const company = data.find(data => data.companyId === currentUser?.companyId);
-                    return company;
+                    return company!;
                   }
                 ),
                 mergeMap((company: Company) => {
-                  console.log(company);
-                  const zayav = this.getDataService.getZayavkiList().pipe(
+                  // заявки
+                  const zayavki_ = this.getDataService.getZayavkiList().pipe(
                     map(data => data.filter(data => data.companyId === company.companyId))
                   );
-                  const disc = this.getDataService.getDisconnections(company.companyId).pipe(
+                  // отключения
+                  const disconnections_ = this.getDataService.getDisconnections(company.companyId).pipe(
                     map(disc => {
-                      console.log(this.housesList.getValue());
-                      this.housesList.getValue().forEach(house =>
-                        disc.forEach(data => {
-                          console.log(`${data.houseGuid} --  ${house.houseGuid}`);
-                          if (data.houseGuid === house.houseGuid)
-                        {
+                        this.housesList.getValue().forEach(house =>
+                          disc.forEach(data => {
+                            if (data.houseGuid === house.houseGuid) {
+                              data.address = house.address;
+                            }
+                          }));
+                        return disc;
+                      }
+                    ));
+                  // квартиры
+                  const flats_ = this.getDataService.getFlatsList(company.companyId);
+                  // инфо
+                  const info_ = this.getDataService.getCitizenInfoList(company.companyId);
 
-                          data.address = house.address
-                        }}));
-                      console.log(disc);
-                      return disc;
-                    }
-                  ));
-                  return forkJoin([zayav, disc]);
+                  return forkJoin([zayavki_, disconnections_, flats_, info_]);
                 })
               ).subscribe(
               result => {
                 this.zayavkiList = result[0];
                 this.zayavkiSubject.next(this.zayavkiList);
                 this.disconnectionsSubject.next(result[1]);
-                console.log(this.disconnectionsSubject);
+                this.flatsSubject.next(result[2]);
+                this.citizenInfoSubject.next(result[3]);
               }
             );
-
-            // return this.getDataService.getZayavkiList().pipe(
-            //   map(data => data.filter(data => data.companyId === company[0].companyId)
-            //   )).subscribe(
-            //   zayavki => {
-            //     this.zayavkiList = zayavki;
-            //     this.zayavkiSubject.next(this.zayavkiList);
-            //   }
-            // );
-
-            ;
+          } else {
+            console.log('user не найден');
           }
         }
       );
   }
 
+  // имена юзеров
+
+  displayUsers(user: User[], currentUser: User) {
+    this.workers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'worker'));
+    this.masters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'master'));
+    this.dispatchers.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcher'));
+    this.dispatchersMasters.next(user.filter(data => data.companyId === currentUser?.companyId && data.role === 'dispatcherMaster'));
+    this.employeeList = user.filter(user => user.companyId === currentUser?.companyId);
+  }
+
+  displayCheckedUsers(userId_: string): string {
+    let nameUser_ = '';
+    switch (userId_) {
+      case 'workerId' :
+        nameUser_ = this.employeeList.find(data => data.companyId === this.currentUser.getValue().companyId && data.role === 'worker')!.name;
+        break;
+      case 'masterId' :
+        nameUser_ = this.employeeList.find(data => data.companyId === this.currentUser.getValue().companyId && data.role === 'master')!.name;
+        break;
+      case 'dispatcherId' :
+        nameUser_ = this.employeeList.find(data => data.companyId === this.currentUser.getValue().companyId && data.role === 'dispatcher' ||
+          this.currentUser.getValue().companyId && data.role === 'dispatcher')!.name;
+        break;
+      default:
+        nameUser_ = '';
+        break;
+    }
+    return nameUser_;
+  }
+
+  // отображение выбранной заявки
+
   setCurrentZayavka(zayavka: Zayavka) {
     return this.currentZayavka.next(zayavka);
   }
 
-  updateZayavka(code: number, prefix: string, updateFilds: object) {
+  // добавление заявки
+
+  addNewZayavka(zayavka: Zayavka) {
+    let listPrefix = this.zayavkiList.filter(z => z.prefix == this.currentUser.getValue().ownPrefix);
+    let idZayavaka = Math.max.apply(Math, listPrefix.map(list => list.code)) + 1;
+
+    zayavka.code = idZayavaka;
+    zayavka.prefix = this.currentUser.getValue().ownPrefix!;
+    zayavka.dateBegin = this.formatOfDateString(formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-GB'));
+    zayavka.status = zayavka.workerId ? 'назначено' : 'принято';
+    let momentDate = moment(zayavka.dateBegin, 'DD-MM-YYYY HH:mm').toDate();
+    momentDate.setHours(momentDate.getHours() + parseInt(zayavka.time));
+    zayavka.dateDeadline = formatDate(momentDate.toString(), 'dd-MM-yyyy HH:mm', 'en-US', '+0500');
+
     // @ts-ignore
-    let findZayavka: Zayavka = this.zayavkiList.find(zayavki => zayavki.prefix === prefix && zayavki.code === code);
-    let ind = this.zayavkiList.indexOf(findZayavka);
-    Object.keys(updateFilds).forEach(keyUpdates =>
-      Object.keys(findZayavka).forEach(key => key === keyUpdates ? Object(findZayavka)[key] === Object(updateFilds)[key] : '')
-    );
+    zayavka.address = this.housesList.getValue() ? this.housesList.getValue().find(house => house.houseGuid === zayavka.houseGuid).address : '';
+    zayavka.dispatcherId = this.currentUser.getValue().id;
+    this.zayavkiList.push(zayavka);
     console.log(this.zayavkiList);
-    this.zayavkiList.splice(ind, 1, findZayavka);
     this.zayavkiSubject.next(this.zayavkiList);
   }
 
-  getHttpZayavki() {
-    return this.getDataService.getZayavkiList().pipe(
-      map(data => data.filter(data => data.companyId)
-      )).subscribe(
-      zayavki => {
-        this.zayavkiList = zayavki;
-        this.zayavkiSubject.next(this.zayavkiList);
-      }
-    );
+  // ап заявки
+
+  updateZayavka(code: number, prefix: string, updateFields: object) {
+    let findZayavka: Zayavka;
+    let finder = this.zayavkiList.find(zayavki => zayavki.prefix === prefix && zayavki.code === code);
+    if (finder !== undefined) {
+      findZayavka = finder;
+      let ind = this.zayavkiList.indexOf(findZayavka);
+      Object.keys(updateFields).forEach(keyUpdates =>
+        Object.keys(findZayavka).forEach(key => key === keyUpdates ? Object(findZayavka)[key] = Object(updateFields)[key] : '')
+      );
+      console.log(this.zayavkiList);
+      this.zayavkiList.splice(ind, 1, findZayavka);
+      this.zayavkiSubject.next(this.zayavkiList);
+    } else {
+      alert('Не удалось добавить заявку');
+    }
+  }
+
+  // новое отключение
+
+  setNewDisconnection(disconnection: Disconnection) {
+    // return Math.max.apply(Math, this.disconnectionsSubject.getValue()!.map(disconnection => disconnection.id)) + 1;
+    let disconnections = this.disconnectionsSubject.getValue();
+    disconnections.push(disconnection);
+    this.disconnectionsSubject.next(disconnections);
+  }
+
+  // ап отключения
+
+  updateDisconnection(disconnection: Disconnection) {
+    let disconnections = this.disconnectionsSubject.getValue();
+    disconnections = disconnections.filter(disconnection_ => disconnection_.id !== disconnection.id);
+    this.disconnectionsSubject.next(disconnections);
+  }
+
+  // формат дат
+
+  formatStringToDate(dateString: string) {
+    return moment(dateString, 'DD-MM-YYYY HH:mm').toDate();
   }
 
   formatOfDateString(dateString: string) {
@@ -155,124 +327,16 @@ export class DataHandlerService {
     return formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-GB');
   }
 
-  addNewZayavka(zayavka: Zayavka) {
-    let listPrefix = this.zayavkiList.filter(z => z.prefix == this.currentUser.getValue().ownPrefix);
-    let idZayavaka = Math.max.apply(Math, listPrefix.map(list => list.code)) + 1;
-    zayavka.code = idZayavaka;
-    // @ts-ignore
-    zayavka.prefix = this.currentUser.getValue().ownPrefix;
-    zayavka.dateBegin = this.formatOfDateString(formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-GB'));
-    zayavka.status = zayavka.workerId ? 'назначено' : 'принято';
-    let momentDate = moment(zayavka.dateBegin, 'DD-MM-YYYY HH:mm').toDate();
-    momentDate.setHours(momentDate.getHours() + parseInt(zayavka.time));
-    zayavka.dateDeadline = formatDate(momentDate.toString(), 'dd-MM-yyyy HH:mm', 'en-US', '+0500');
-    // @ts-ignore
-    zayavka.address = this.housesList.getValue().find(house => house.houseGuid === zayavka.houseGuid).address;
-    zayavka.dispatcherId = this.currentUser.getValue().id;
-    this.zayavkiList.push(zayavka);
-    console.log(this.zayavkiList);
-    this.zayavkiSubject.next(this.zayavkiList);
+  formatDateToString(newDate: Date) {
+    return formatDate(newDate, 'dd-MM-yyyy HH:mm', 'en-GB');
   }
 
-  getZayavka() {
-    return ZayavkaNew;
+  formatOfDiscDate(dateString: string) {
+    let date = moment(dateString, 'DD-MM-YYYY').toDate();
+    return formatDate(new Date(date), 'dd-MM-yyyy', 'ru-RU');
   }
 
-  // Дома
-
-  getHousesList() {
-    this.flatsList = [];
-    this.citizenInfoList = [];
-    this.getDataService.getHousesList().subscribe(
-      houses => {
-        this.housesList.next(houses);
-        this.getFlatsList(houses);
-        console.log(this.housesList);
-        houses.forEach(
-          house => {
-            this.getDataService.getFlatsList(house.houseGuid).subscribe(
-              flat => this.flatsList.push(flat)
-            );
-            this.getDataService.getCitizenInfoList(house.houseGuid).subscribe(
-              info => this.citizenInfoList.push(info)
-            );
-            this.getHttpZayavkiData();
-            // this.getDataService.getDisconnections(house.houseGuid, house.address).subscribe(
-            //   disc => {
-            //     // @ts-ignore
-            //     // disc.forEach(disc_ => { if (disc_.houseGuid === house.houseGuid) { disc_.address = house.address}});
-            //     console.log(disc);
-            //     this.disconnectionsSubject.next(disc);
-            //     this.disconnectionsList = disc;
-            //   }
-            // );
-          }
-        );
-      }
-    );
-  }
-
-  // Квартира
-
-  getFlatsList(housesList: Houses[]) {
-    // this.flatsList = [];
-    // this.citizenInfoList = [];
-    // housesList.forEach(
-    //   house => {
-    //     console.log(house);
-    //     this.getDataService.getFlatsList(house.houseGuid).subscribe(
-    //       flat => this.flatsList.push(flat)
-    //     );
-    //     this.getDataService.getCitizenInfoList(house.houseGuid).subscribe(
-    //           info => this.citizenInfoList.push(info)
-    //     );
-    //
-    //   }
-    // );
-  }
-
-  // Статус
-
-  getStatusList() {
-    this.getDataService.getStatusList().subscribe(
-      status => {
-        this.statusList.next(status);
-        console.log(status);
-      }
-    );
-  }
-
-  // Тип
-
-  getTypeList() {
-    this.getDataService.getTypeList().subscribe(
-      types => {
-        this.typeList.next(types);
-        console.log(types);
-      }
-    );
-  }
-
-  // Вид
-
-  getKindList() {
-    this.getDataService.getKindList().subscribe(
-      kinds => {
-        this.kindList.next(kinds);
-        console.log(kinds);
-      }
-    );
-  }
-
-  // Контенты
-
-  getHttpContent() {
-    this.getDataService.getContentList().subscribe(
-      content => {
-        this.contents = content;
-      }
-    );
-  }
+  // Фильтр контентов
 
   getContentList(type: string, kind: string) {
     console.log(this.contents);
@@ -284,50 +348,22 @@ export class DataHandlerService {
     return;
   }
 
-  contentFilter(name: string) {
+  // Фильтр заявок
 
-  }
-
-  // Компания
-
-  getCurrentCompany(user: any): string {
-    this.getDataService.getCurrentCompany()
-      .pipe(
-        map(data => data.filter(data => data.companyId === user[0].companyId)
-        )).subscribe(
-      company => {
-        return company.toString();
-      }
-    );
-    return '';
-  }
-
-  // Отключения
-
-  getDisconnectionsList() {
-
-  }
-
-  // Юзер
-
-  getCurrentUser(): any {
-    // this.getDataService.getCurrentUser()
-    //   .pipe(
-    //     map(data => data.filter(data => data.id === 'PDCvH0p7BT')
-    //     )).subscribe(
-    //   user => {
-    //     this.currentUser.next(user);
-    //     return user;
-    //   }
-    // );
-  }
-
-
-  // Фильтр
-
-  filters(text?: string, houseGuid?: string, status?: string, type?: string, kind?: string) {
-    console.log(`${text} - ${houseGuid} - ${status} - ${type} - ${kind}`);
+  filters(text?: string, houseGuid?: string, intervalStart?: Date, intervalEnd?: Date, status?: string, type?: string, kind?: string) {
+    console.log(`${text} - ${intervalStart} - ${intervalEnd} - ${houseGuid} - ${status} - ${type} - ${kind}`);
     let filterZayavki = this.zayavkiList;
+    if (intervalStart !== undefined && intervalStart !== null) {
+      if (intervalEnd !== undefined && intervalEnd !== null) {
+        let timeStart = intervalStart.getTime();
+        let timeEnd = intervalEnd.getTime();
+        filterZayavki = filterZayavki.filter(zayavka => {
+            let dateBegin = moment(zayavka.dateBegin, 'DD-MM-YYYY 00:00').toDate().getTime();
+            return dateBegin >= timeStart && dateBegin <= timeEnd;
+          }
+        );
+      }
+    }
     if (text !== undefined && text !== '') {
       filterZayavki = filterZayavki.filter(zayavka => zayavka.address.toUpperCase().includes(<string> text?.toUpperCase()));
     }
@@ -344,23 +380,34 @@ export class DataHandlerService {
       console.log('v domah');
       filterZayavki = filterZayavki.filter(z => z.houseGuid === houseGuid);
     }
-
     return filterZayavki;
   }
 
+  // Фильтр отключения
 
-  // Фильтр
-
-  filtersDisconnections(text?: string, houseGuid?: string, type?: string, interval?: string, initiator?: string) {
-    console.log(`${text} - ${houseGuid} - ${type} - ${interval} - ${initiator}`);
-    let filterDisconnections = this.disconnectionsList;
-    if (text !== undefined && text !== '') {
-      // @ts-ignore
-      filterDisconnections = filterDisconnections.filter(disconnection => disconnection.address.toUpperCase().includes(<string> text?.toUpperCase()));
+  filtersDisconnections(text?: string, houseGuid?: string, intervalStart?: Date, intervalEnd?: Date, type?: string, initiator?: string) {
+    console.log(`${text} - ${houseGuid} - ${type} - ${intervalStart} - ${intervalEnd} - ${initiator}`);
+    let filterDisconnections = this.disconnectionsSubject.getValue();
+    if (intervalStart !== undefined && intervalStart !== null) {
+      if (intervalEnd !== undefined && intervalEnd !== null) {
+        let timeStart = intervalStart.getTime();
+        let timeEnd = intervalEnd.getTime();
+        filterDisconnections = filterDisconnections.filter(disconnection => {
+            let intervalStart = moment(disconnection.interval[0], 'DD-MM-YYYY 00:00').toDate().getTime();
+            let intervalEnd = moment(disconnection.interval[1], 'DD-MM-YYYY 00:00').toDate().getTime();
+            //   console.log(moment(disconnection.interval[0], 'DD-MM-YYYY 00:00').toDate());
+            //   console.log(moment(disconnection.interval[1], 'DD-MM-YYYY 00:00').toDate());
+            // console.log(`${intervalStart}  - ${timeStart} - ${intervalEnd} - ${timeEnd}`);
+            // console.log(intervalStart >= timeStart);
+            // console.log(intervalEnd <= timeEnd);
+            return intervalStart >= timeStart && intervalEnd <= timeEnd;
+          }
+        );
+      }
     }
-    // if (kind !== null && kind !== undefined && kind !== '') {
-    //   filterZayavki = filterZayavki.filter(z => z.kindWork === kind);
-    // }
+    if (text !== undefined && text !== '') {
+      filterDisconnections = filterDisconnections.filter(disconnection => disconnection.address!.toUpperCase().includes(<string> text?.toUpperCase()));
+    }
     if (type !== null && type !== undefined && type !== '') {
       filterDisconnections = filterDisconnections.filter(d => d.typeWork === type);
     }
@@ -375,15 +422,13 @@ export class DataHandlerService {
     }
     return filterDisconnections;
   }
-
-
 }
 
 
 const ZayavkaNew: Zayavka =
   {
     'code': 6,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -413,15 +458,15 @@ const ZayavkaNew: Zayavka =
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   };
 
 const ZayavkiTest: Zayavka[] = [
   {
     'code': 6,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -451,13 +496,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 7,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -487,13 +532,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 8,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -523,13 +568,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 9,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -559,13 +604,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 10,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -595,13 +640,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 11,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -631,13 +676,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 12,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -667,13 +712,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 13,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -703,13 +748,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 14,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -739,13 +784,13 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
   {
     'code': 15,
-    'contents': [
+    'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',
       'Демонтаж запорной арматуры',
       'Демонтаж заглушки'
@@ -775,8 +820,8 @@ const ZayavkiTest: Zayavka[] = [
     'typeWork': 'Сантехнические',
     'kindWork': 'Аварийная',
     'cancelReason': '',
-    'dateWorkOff': '',
-    'dateWorkOn': '18-10-2019  14:46',
+    'dateWorkEnd': '',
+    'dateWorkStart': '18-10-2019  14:46',
     'companyId': 'usrCompany'
   },
 ];

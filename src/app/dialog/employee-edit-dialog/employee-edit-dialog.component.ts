@@ -14,9 +14,9 @@ export class EmployeeEditDialogComponent implements OnInit {
   fieldTitle: string = '';
   fieldName: string = '';
   fieldValue: string = '';
-  masters: User[];
-  workers: User[];
-  tmpSelect: User[];
+  masters: User[] = [];
+  workers: User[] = [];
+  tmpSelect: User[] = [];
   typeWork: string | undefined = '';
 
   constructor(private dialogRef: MatDialogRef<EmployeeEditDialogComponent>,

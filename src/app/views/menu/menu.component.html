@@ -15,11 +15,11 @@
     <mat-icon mat-list-icon>priority_high</mat-icon>
     <div mat-line>Отключения</div>
   </mat-list-option>
-  <mat-list-option value="plan">
+  <mat-list-option value="plan" [disabled]="true" class="disable-element">
     <mat-icon mat-list-icon>drag_handle</mat-icon>
     <div mat-line>Плановые работы</div>
   </mat-list-option>
-  <mat-list-option value="dop">
+  <mat-list-option value="dop" [disabled]="true" class="disable-element">
     <mat-icon mat-list-icon>playlist_add</mat-icon>
     <div mat-line>Дополнительные</div>
   </mat-list-option>

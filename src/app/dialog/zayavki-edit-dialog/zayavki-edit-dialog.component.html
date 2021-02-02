@@ -5,9 +5,9 @@
       <mat-form-field class="example-form-field full-width div-top">
         <mat-label >{{fieldTitle}}</mat-label>
         <textarea matInput type="text" [(ngModel)]="fieldValue" name="textField">
-        <button mat-button *ngIf="fieldValue" matSuffix mat-icon-button aria-label="Clear">
-          <mat-icon>close</mat-icon>
-        </button>
+                <button mat-button *ngIf="fieldValue" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="fieldValue = ''">
+                  <mat-icon>close</mat-icon>
+                </button>
         </textarea>
       </mat-form-field>
     </mat-card-subtitle>

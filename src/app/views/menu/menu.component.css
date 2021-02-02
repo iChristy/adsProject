@@ -7,3 +7,8 @@
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
+.disable-element {
+  background-color: transparent;
+  opacity: 0.2
+}

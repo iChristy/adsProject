@@ -11,29 +11,30 @@ import {MatDialog} from '@angular/material/dialog';
 import {ContentsDialogComponent} from '../../dialog/contents-dialog/contents-dialog.component';
 import {ActivatedRoute, Params} from '@angular/router';
 import {CitizenInfoDialogComponent} from '../../dialog/citizen-info-dialog/citizen-info-dialog.component';
+import {elementShow} from '../../animations';
 
 
 @Component({
   selector: 'app-zayavki-addition',
   templateUrl: './zayavki-addition.component.html',
-  styleUrls: ['./zayavki-addition.component.css']
+  styleUrls: ['./zayavki-addition.component.css'],
+  animations: [elementShow]
 })
 export class ZayavkiAdditionComponent implements OnInit {
 
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
-  value: '2323';
-  // zayavka: Zayavka;
-  zayavki: Zayavka[];
-  houses: Houses[];
-  types: TypeWork[];
-  kinds: KindWork[];
+  firstFormGroup: FormGroup | undefined;
+  secondFormGroup: FormGroup | undefined;
+  // value: '2323';
+  zayavki: Zayavka[] = [];
+  houses: Houses[] = [];
+  types: TypeWork[] = [];
+  kinds: KindWork[] = [];
   a: any;
-  workers: User[];
-  masters: User[];
-  tmpWorkers: User[];
-  tmpMasters: User[];
-  dispatchersMasters: User[];
+  workers: User[] = [];
+  masters: User[] = [];
+  tmpWorkers: User[] = [];
+  tmpMasters: User[] = [];
+  dispatchersMasters: User[]= [];
   @Input() zayavka: Zayavka;
 
   constructor(private _formBuilder: FormBuilder, private dataHandlerService: DataHandlerService, private dialog: MatDialog) {
@@ -96,7 +97,7 @@ export class ZayavkiAdditionComponent implements OnInit {
   openContentsDialog() {
     let dialogRef = this.dialog.open(ContentsDialogComponent, {
       width: '700px !important',
-      height: '60%', data: [this.zayavka.typeWork, this.zayavka.kindWork, this.zayavka.contents], autoFocus: false
+      height: '60%', data: [this.zayavka.typeWork, this.zayavka.kindWork, this.zayavka.services], autoFocus: false
     });
 
     let timeArray: number[] = [];
@@ -104,8 +105,8 @@ export class ZayavkiAdditionComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
         if (result) {
           console.log(result[1]);
-          this.zayavka.contents = [];
-          result[0].forEach((r: { name: string; }) => this.zayavka.contents.push(r.name));
+          this.zayavka.services = [];
+          result[0].forEach((r: { name: string; }) => this.zayavka.services.push(r.name));
           this.zayavka.time = result[1];
           this.zayavka.price = result[2];
         }
@@ -118,7 +119,7 @@ export class ZayavkiAdditionComponent implements OnInit {
     console.log(this.dataHandlerService.citizenInfoList);
     let dialogRef = this.dialog.open(CitizenInfoDialogComponent, {
       width: '700px !important',
-      height: '60%', data: [this.zayavka.houseGuid, this.zayavka.flatNum, this.dataHandlerService.citizenInfoList], autoFocus: false
+      height: '60%', data: [this.zayavka.houseGuid, this.zayavka.flatNum, this.dataHandlerService.citizenInfoSubject.getValue()], autoFocus: false
     });
 
     let timeArray: number[] = [];

@@ -15,7 +15,7 @@ export class CitizenInfoDialogComponent implements OnInit {
 
   tmpHouseGuid: string = '';
   tmpFlatNum: string = '';
-  flats: Flats[];
+  flats: Flats[] = [];
   tmpFlat: Flats | undefined;
   citizenInfo: CitizenInfo[] = [];
 

@@ -1,17 +1,15 @@
 export class Offer {
-  address: string;
   houseGuid: string;
   employeeId: string;
-  date: string;
+  dateAdd: string;
   active: boolean;
   comment: string;
 
 
-  constructor(address: string, houseGuid: string, employeeId: string, date: string, active: boolean, comment: string) {
-    this.address = address;
+  constructor(houseGuid: string, employeeId: string, dateAdd: string, active: boolean, comment: string) {
     this.houseGuid = houseGuid;
     this.employeeId = employeeId;
-    this.date = date;
+    this.dateAdd = dateAdd;
     this.active = active;
     this.comment = comment;
   }

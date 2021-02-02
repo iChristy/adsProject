@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy} from '@angular/core';
 import {DataHandlerService} from './services/data-handler.service';
-import {Zayavka} from './interfaces/Zayavka';
+import {ZayavkaInterface} from './interfaces/ZayavkaInterface';
 import {Houses} from './classes/Houses';
 import {elementShow} from './animations';
 
@@ -10,42 +10,34 @@ import {elementShow} from './animations';
   styleUrls: ['./app.component.css'],
   animations: [elementShow]
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit, OnDestroy{
 
 
   opened: boolean = true;
   events: string[] = [];
-  houses: Houses[];
+  houses: Houses[] = [];
 
   constructor(private dataHandlerService: DataHandlerService) {
   }
 
   ngOnInit() {
+    this.dataHandlerService.connectToWebSocket();
     this.dataHandlerService.getHousesList();
-    // this.dataHandlerService.getHttpZayavkiData();
-    this.dataHandlerService.getStatusList();
-    this.dataHandlerService.getTypeList();
-    this.dataHandlerService.getKindList();
-    this.dataHandlerService.getHttpContent();
-    // this.houses = this.dataHandlerService.getHouses();
   }
 
   onOpenedChange(opened: boolean): void {
     this.opened = opened;
   }
 
-
   ngOnDestroy() {
     // this.dataHandlerService.getHttpZayavki().unsubscribe();
   }
-
-
 }
 
-const ZayavkiList: Zayavka =
+const ZayavkiList: ZayavkaInterface =
   {
     "code" : 100,
-    "contents" : [
+    "services" : [
       "Демонтаж змеевика (полотенцесушителя)!!!!",
       "Демонтаж запорной арматуры",
       "Демонтаж заглушки"
@@ -75,7 +67,7 @@ const ZayavkiList: Zayavka =
     "typeWork" : "Сантехнические",
     "kindWork" : "Аварийная",
     "cancelReason" : "",
-    "dateWorkOff" : "",
-    "dateWorkOn" : "18-10-2019  14:46",
+    "dateWorkEnd" : "",
+    "dateWorkStart" : "18-10-2019  14:46",
     "companyId" : "usrCompany"
   };

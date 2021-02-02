@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {DataHandlerService} from '../../services/data-handler.service';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,7 @@ export class HeaderComponent implements OnInit {
 
   @Output() openedChange = new EventEmitter();
 
-  constructor() { }
+  constructor(private dataHandlerService: DataHandlerService) { }
 
   ngOnInit(): void {
   }
@@ -19,6 +20,15 @@ export class HeaderComponent implements OnInit {
   onOpenedChange(): void {
     this.opened = !this.opened;
     this.openedChange.emit(this.opened);
+
+  }
+
+  checkWs() {
+    this.dataHandlerService.sendNewZayavka();
+  }
+
+  exit() {
+
   }
 
 }

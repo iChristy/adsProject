@@ -79,3 +79,6 @@ tr.mat-row, tr.mat-footer-row {
   }
 }
 
+.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button, .mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button {
+  display: inline-block !important;
+}

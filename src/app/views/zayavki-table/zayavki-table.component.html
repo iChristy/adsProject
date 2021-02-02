@@ -3,7 +3,6 @@
     <div class="row">
       <div class="col-md-3 col-12">
         <ng-template matStepLabel>Информация о заявителе</ng-template>
-        <!--        showTable($event, inputSearchText.value, selectSearchAddress.value, selectSearcStatus.value, selectSearchType.value, selectSearchKind.value)-->
         <mat-form-field class="example-form-field full-width">
           <mat-label>
             <mat-icon>search</mat-icon>
@@ -12,9 +11,9 @@
           <input #inputSearchText matInput type="text" [(ngModel)]="textSearch"
                  (keyup)="showTable()"
                  name="secondStep">
-          <!--        <button mat-button  matSuffix mat-icon-button aria-label="Clear">-->
-          <!--          <mat-icon>close</mat-icon>-->
-          <!--        </button>-->
+          <button mat-button *ngIf="textSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="textSearch = ''; showTable()">
+            <mat-icon>close</mat-icon>
+          </button>
         </mat-form-field>
       </div>
     </div>
@@ -24,7 +23,7 @@
           <mat-label>Адрес</mat-label>
           <mat-select [(ngModel)]="addressSearch" #selectSearchAddress
                       (ngModelChange)="showTable()">
-            <mat-option [value]="null"
+            <mat-option [value]="null" class="option-all"
             >
               Все
             </mat-option>
@@ -32,68 +31,76 @@
               {{house.address}}
             </mat-option>
           </mat-select>
+          <button mat-button *ngIf="addressSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="addressSearch = ''; showTable()">
+            <mat-icon>close</mat-icon>
+          </button>
         </mat-form-field>
       </div>
       <div class="col-md-3 col-12">
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Выберите интервал дат</mat-label>
-          <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate placeholder="Начальная дата">
-            <input matEndDate placeholder="Конечная дата">
+          <mat-label>Период</mat-label>
+          <mat-date-range-input [rangePicker]="picker" >
+            <input matStartDate [(ngModel)]="intervalStartSearch" (dateChange)="showTable()" placeholder="Начальная дата">
+            <input matEndDate [(ngModel)]="intervalEndSearch"  (dateChange)="showTable()"placeholder="Конечная дата">
           </mat-date-range-input>
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
+            <button mat-button *ngIf="intervalStartSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="clearDate()">
+              <mat-icon>close</mat-icon>
+            </button>
         </mat-form-field>
       </div>
       <div class="col-md-2  col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Статус</mat-label>
           <mat-select [(ngModel)]="statusSearch" #selectSearcStatus (ngModelChange)="showTable()">
-            <mat-option [value]="null">
+            <mat-option [value]="null" class="option-all" >
               Все
             </mat-option>
             <mat-option *ngFor="let stat of status" [value]="stat.status">
               {{stat.status}}
             </mat-option>
           </mat-select>
+          <button mat-button *ngIf="statusSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="statusSearch = ''; showTable()">
+            <mat-icon>close</mat-icon>
+          </button>
         </mat-form-field>
       </div>
       <div class="col-md-2 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Тип</mat-label>
           <mat-select [(ngModel)]="typeSearch" #selectSearchType (ngModelChange)="showTable()">
-            <mat-option style="border-bottom: 1px solid" [value]="null">
+            <mat-option class="option-all"  [value]="null">
               Все
             </mat-option>
             <mat-option *ngFor="let type of types" [value]="type.name">
               {{type.name}}
             </mat-option>
           </mat-select>
+          <button mat-button *ngIf="typeSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="typeSearch = ''; showTable()">
+            <mat-icon>close</mat-icon>
+          </button>
         </mat-form-field>
       </div>
       <div class="col-md-2 col-12">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Вид</mat-label>
           <mat-select [(ngModel)]="kindSearch" #selectSearchKind (ngModelChange)="showTable()">
-            <mat-option [value]="null">
+            <mat-option [value]="null" class="option-all" >
               Все
             </mat-option>
             <mat-option *ngFor="let kind of kinds" [value]="kind.name">
               {{kind.name}}
             </mat-option>
           </mat-select>
+          <button mat-button *ngIf="kindSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="kindSearch = ''; showTable()">
+            <mat-icon>close</mat-icon>
+          </button>
         </mat-form-field>
       </div>
     </div>
   </div>
 
-  <!--  <div class="div-padding">-->
-  <!--    <div class="row">-->
-  <!--      <mat-card class="col-2" *ngFor="let stat of status" (loadedmetadata)="checkStat(stat.status)">-->
-  <!--        <h1>Заявок {{stat.status}}: {{prinStat}}</h1>-->
-  <!--      </mat-card>-->
-  <!--    </div>-->
-  <!--  </div>-->
   <div *ngIf="!checkLoadling" class="spinners">
     <div class="spinner1">
     </div>
@@ -101,7 +108,7 @@
     </div>
   </div>
 
-    <table #table @triggerShow *ngIf="checkLoadling" class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <table #table @triggerElementShow *ngIf="checkLoadling" class="table" style="width: 100%" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
       <ng-container matColumnDef="number">
         <th mat-header-cell *matHeaderCellDef (click)="showTable()"> Номер</th>
