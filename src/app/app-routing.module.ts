@@ -1,14 +1,17 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 import {ZayavkiTableComponent} from './views/zayavki-table/zayavki-table.component';
 import {ZayavkiAdditionComponent} from './views/zayavki-addition/zayavki-addition.component';
 import {ZayavkiCurrentComponent} from './views/zayavki-current/zayavki-current.component';
 import {DisconnectionsComponent} from './views/disconnections/disconnections.component';
+import {AccessGuard} from './access.guard';
 
 const routes: Routes = [{
-  path: 'adsTable',
-  component: ZayavkiTableComponent
-},
+    path: 'adsTable',
+    component: ZayavkiTableComponent,
+    canActivate: [AccessGuard],
+    canDeactivate: [AccessGuard]
+  },
   {
     path: 'adsAdd',
     component: ZayavkiAdditionComponent
@@ -37,8 +40,6 @@ const routes: Routes = [{
   exports: [RouterModule]
 })
 export class AppRoutingModule {
-
-
 
 
 }

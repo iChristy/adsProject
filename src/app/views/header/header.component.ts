@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DataHandlerService} from '../../services/data-handler.service';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -9,10 +10,11 @@ import {DataHandlerService} from '../../services/data-handler.service';
 export class HeaderComponent implements OnInit {
 
   @Input() opened: boolean = true;
-  @Output() setEntry = new EventEmitter();
+  @Input() logged: boolean = false;
+  @Output() setLogged = new EventEmitter();
   @Output() openedChange = new EventEmitter();
 
-  constructor(private dataHandlerService: DataHandlerService) { }
+  constructor(private dataHandlerService: DataHandlerService, private authService: AuthService) { }
 
   ngOnInit(): void {
   }
@@ -20,7 +22,6 @@ export class HeaderComponent implements OnInit {
   onOpenedChange(): void {
     this.opened = !this.opened;
     this.openedChange.emit(this.opened);
-
   }
 
   checkWs() {
@@ -28,7 +29,8 @@ export class HeaderComponent implements OnInit {
   }
 
   exit() {
-    this.setEntry.emit(true);
+    this.authService.logout();
+    this.setLogged.emit(false);
   }
 
 }

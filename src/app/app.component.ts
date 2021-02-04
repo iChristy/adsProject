@@ -3,6 +3,7 @@ import {DataHandlerService} from './services/data-handler.service';
 import {ZayavkaInterface} from './interfaces/ZayavkaInterface';
 import {Houses} from './classes/Houses';
 import {elementShow} from './animations';
+import {AuthService} from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -15,14 +16,15 @@ export class AppComponent implements OnInit, OnDestroy{
   opened: boolean = true;
   events: string[] = [];
   houses: Houses[] = [];
-  entry: boolean = false;
+  logged: boolean = false;
 
-  constructor(private dataHandlerService: DataHandlerService) {
+  constructor(private dataHandlerService: DataHandlerService, private authService: AuthService) {
   }
 
   ngOnInit() {
     // this.dataHandlerService.connectToWebSocket();
     this.dataHandlerService.getStaticLists();
+    this.logged = this.authService.getLogged();
   }
 
   onOpenedChange(opened: boolean): void {
@@ -33,8 +35,15 @@ export class AppComponent implements OnInit, OnDestroy{
     this.dataHandlerService.unsubscribeLists();
   }
 
-  entrySet(event: any) {
-    console.log(event);
-    this.entry = event;
+  logout($event: any) {
+    this.logged = false;
+    this.authService.logout();
   }
+
+  login($event: any) {
+    this.logged = true;
+    this.authService.login();
+  }
+
+
 }

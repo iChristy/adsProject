@@ -1,5 +1,5 @@
-<app-login [entry]="entry" (setEntry)="entrySet($event)" *ngIf="entry"></app-login>
-<mat-sidenav-container *ngIf="!entry" class="row example-container">
+<app-login  *ngIf="!logged" [logged]="logged" (setLogged)="login($event)"></app-login>
+<mat-sidenav-container *ngIf="logged" class="row example-container">
 
   <mat-sidenav #sidenav @triggerElementShow mode="side" class="col-sm-4 col-md-2 col-10 display-inbl"
                [(opened)]="opened" (opened)="events.push('open!')"
@@ -8,7 +8,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content [ngClass]="{'col-12': !opened, 'col-sm-8 col-md-10': opened}" class="  col-12 display-inbl">
-    <app-header [opened]="opened" (openedChange)="onOpenedChange($event)" (setEntry)="entrySet($event)"></app-header>
+    <app-header [opened]="opened" (openedChange)="onOpenedChange($event)"  [logged]="logged" (setLogged)="logout($event)"></app-header>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

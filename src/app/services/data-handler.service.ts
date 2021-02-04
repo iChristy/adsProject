@@ -34,9 +34,6 @@ export class DataHandlerService {
   flatsList: Flats[] = [];
   citizenInfoList: CitizenInfo[] = [];
 
-  staticLists;
-  dynamicLists;
-
   housesList = new BehaviorSubject<Houses[]>([]);
   statusList = new BehaviorSubject<Status[]>([]);
   typeList = new BehaviorSubject<TypeWork[]>([]);
@@ -135,7 +132,7 @@ export class DataHandlerService {
     this.flatsList = [];
     this.citizenInfoList = [];
 
-    this.staticLists = this.getDataService.getHousesList()
+    let staticLists = this.getDataService.getHousesList()
       .pipe(mergeMap(
         (houses_: Houses[]) => {
           // дома
@@ -160,12 +157,14 @@ export class DataHandlerService {
           this.getDynamicLists();
         }
       );
+
+    return staticLists;
   }
 
   //  Заявки / юзеры / компания / отключения / квартиры / инфо
 
   getDynamicLists() {
-    this.dynamicLists = this.getDataService.getCurrentUser()
+    let dynamicLists = this.getDataService.getCurrentUser()
       .subscribe(
         user => {
           console.log(user);
@@ -219,13 +218,14 @@ export class DataHandlerService {
           }
         }
       );
+    return dynamicLists;
   }
 
   // отписка
 
   unsubscribeLists() {
-    this.staticLists.unsubscribe();
-    this.dynamicLists.unsubscribe();
+    this.getDynamicLists().unsubscribe();
+    this.getStaticLists().unsubscribe();
   }
 
   // имена юзеров
