@@ -17,4 +17,6 @@
   box-shadow: none;
 }
 
-
+.test-animate:hover {
+  transform: rotate(30deg);
+}

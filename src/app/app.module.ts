@@ -45,6 +45,8 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import { DisconnectionAdditionDialogComponent } from './dialog/disconnection-addition-dialog/disconnection-addition-dialog.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { LoginComponent } from './views/login/login.component';
+import {MatMenuModule} from '@angular/material/menu';
 
 registerLocaleData(localeRu);
 
@@ -64,7 +66,8 @@ registerLocaleData(localeRu);
     CancelDialogComponent,
     EmployeeEditDialogComponent,
     DisconnectionsComponent,
-    DisconnectionAdditionDialogComponent
+    DisconnectionAdditionDialogComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -92,7 +95,8 @@ registerLocaleData(localeRu);
     ScrollingModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatMenuModule
     // DragDropModule
   ],
   providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}, {provide: MAT_DATE_LOCALE, useValue: 'ru-RU'}, MatDatepickerModule],

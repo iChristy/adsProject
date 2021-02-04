@@ -12,17 +12,17 @@ import {elementShow} from './animations';
 })
 export class AppComponent implements OnInit, OnDestroy{
 
-
   opened: boolean = true;
   events: string[] = [];
   houses: Houses[] = [];
+  entry: boolean = false;
 
   constructor(private dataHandlerService: DataHandlerService) {
   }
 
   ngOnInit() {
-    this.dataHandlerService.connectToWebSocket();
-    this.dataHandlerService.getHousesList();
+    // this.dataHandlerService.connectToWebSocket();
+    this.dataHandlerService.getStaticLists();
   }
 
   onOpenedChange(opened: boolean): void {
@@ -30,44 +30,11 @@ export class AppComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy() {
-    // this.dataHandlerService.getHttpZayavki().unsubscribe();
+    this.dataHandlerService.unsubscribeLists();
+  }
+
+  entrySet(event: any) {
+    console.log(event);
+    this.entry = event;
   }
 }
-
-const ZayavkiList: ZayavkaInterface =
-  {
-    "code" : 100,
-    "services" : [
-      "Демонтаж змеевика (полотенцесушителя)!!!!",
-      "Демонтаж запорной арматуры",
-      "Демонтаж заглушки"
-    ],
-    "price" : "0",
-    "email" : "",
-    "address" : "г. Пермь, ул. Серебрянский проезд, д. 16",
-    "phone" : "89076523452",
-    "time" : "48",
-    "actions" : "",
-    "status" : "принято",
-    "prefix" : "УАА",
-    "houseGuid" : "9205d0ff-ff0c-4d98-8407-0343f3368cd2",
-    "flatNum" : "12",
-    "flatGuid" : "",
-    "dispatcherId" : "PDCvH0p7BT",
-    "masterId" : "PDCvH0p7BT",
-    "workerId" : "",
-    "materials" : "",
-    "picId" : -1,
-    "dateBegin" : "18-10-2019  14:46",
-    "fioOwner" : "Быстров Владимир Гаврилович",
-    "dateDeadline" : "20-10-2019  14:45",
-    "fioSecondary" : "",
-    "dateComplete" : "",
-    "comment" : "",
-    "typeWork" : "Сантехнические",
-    "kindWork" : "Аварийная",
-    "cancelReason" : "",
-    "dateWorkEnd" : "",
-    "dateWorkStart" : "18-10-2019  14:46",
-    "companyId" : "usrCompany"
-  };

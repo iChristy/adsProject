@@ -84,7 +84,7 @@
               Сторонняя организация
             </mat-option>
           </mat-select>
-          <button mat-button *ngIf="initiatorSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="initiatorSearch = null; showTable()">
+          <button mat-button *ngIf="initiatorSearch" matSuffix mat-icon-button matTooltip="Очистить поле" (click)="initiatorSearch = ''; showTable()">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>

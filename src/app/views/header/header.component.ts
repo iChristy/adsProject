@@ -9,7 +9,7 @@ import {DataHandlerService} from '../../services/data-handler.service';
 export class HeaderComponent implements OnInit {
 
   @Input() opened: boolean = true;
-
+  @Output() setEntry = new EventEmitter();
   @Output() openedChange = new EventEmitter();
 
   constructor(private dataHandlerService: DataHandlerService) { }
@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit {
   }
 
   exit() {
-
+    this.setEntry.emit(true);
   }
 
 }

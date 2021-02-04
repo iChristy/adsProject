@@ -34,6 +34,9 @@ export class DataHandlerService {
   flatsList: Flats[] = [];
   citizenInfoList: CitizenInfo[] = [];
 
+  staticLists;
+  dynamicLists;
+
   housesList = new BehaviorSubject<Houses[]>([]);
   statusList = new BehaviorSubject<Status[]>([]);
   typeList = new BehaviorSubject<TypeWork[]>([]);
@@ -128,11 +131,11 @@ export class DataHandlerService {
 
   // Дома /  статусы / типы / контенты / виды
 
-  getHousesList() {
+  getStaticLists() {
     this.flatsList = [];
     this.citizenInfoList = [];
 
-    this.getDataService.getHousesList()
+    this.staticLists = this.getDataService.getHousesList()
       .pipe(mergeMap(
         (houses_: Houses[]) => {
           // дома
@@ -154,15 +157,15 @@ export class DataHandlerService {
           this.statusList.next(result[1]);
           this.typeList.next(result[2]);
           this.kindList.next(result[3]);
-          this.getHttpZayavkiData();
+          this.getDynamicLists();
         }
       );
   }
 
   //  Заявки / юзеры / компания / отключения / квартиры / инфо
 
-  getHttpZayavkiData() {
-    this.getDataService.getCurrentUser()
+  getDynamicLists() {
+    this.dynamicLists = this.getDataService.getCurrentUser()
       .subscribe(
         user => {
           console.log(user);
@@ -216,6 +219,13 @@ export class DataHandlerService {
           }
         }
       );
+  }
+
+  // отписка
+
+  unsubscribeLists() {
+    this.staticLists.unsubscribe();
+    this.dynamicLists.unsubscribe();
   }
 
   // имена юзеров
@@ -395,11 +405,6 @@ export class DataHandlerService {
         filterDisconnections = filterDisconnections.filter(disconnection => {
             let intervalStart = moment(disconnection.interval[0], 'DD-MM-YYYY 00:00').toDate().getTime();
             let intervalEnd = moment(disconnection.interval[1], 'DD-MM-YYYY 00:00').toDate().getTime();
-            //   console.log(moment(disconnection.interval[0], 'DD-MM-YYYY 00:00').toDate());
-            //   console.log(moment(disconnection.interval[1], 'DD-MM-YYYY 00:00').toDate());
-            // console.log(`${intervalStart}  - ${timeStart} - ${intervalEnd} - ${timeEnd}`);
-            // console.log(intervalStart >= timeStart);
-            // console.log(intervalEnd <= timeEnd);
             return intervalStart >= timeStart && intervalEnd <= timeEnd;
           }
         );
@@ -425,8 +430,7 @@ export class DataHandlerService {
 }
 
 
-const ZayavkaNew: Zayavka =
-  {
+const ZayavkaNew: Zayavka = {
     'code': 6,
     'services': [
       'Демонтаж змеевика (полотенцесушителя)!!!!',

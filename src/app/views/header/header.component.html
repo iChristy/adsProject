@@ -9,9 +9,15 @@
       <p class="up">Аварийно-диспетчерская служба</p>
     </div>
     <div class="display-inbl settings">
-      <button  mat-icon-button  aria-label="Example icon button with a menu icon"  (click)="checkWs()">
-        <mat-icon>settings</mat-icon>
-      </button>
+<!--      <button  mat-icon-button  aria-label="Example icon button with a menu icon"  (click)="exit()">-->
+<!--        <mat-icon>settings</mat-icon>-->
+<!--      </button>-->
+      <button mat-button [matMenuTriggerFor]="menu" ><mat-icon class="test-animate">settings</mat-icon></button>
+      <mat-menu #menu="matMenu" >
+        <button mat-menu-item value='settings' [disabled]="true" [autofocus]="false">Настройки</button>
+        <button mat-menu-item value='exit' (click)="exit()" [autofocus]="false">Выход</button>
+      </mat-menu>
+
     </div>
   </div>
 </mat-card>
