@@ -1,5 +1,5 @@
-<app-login  *ngIf="!logged" [logged]="logged" (setLogged)="login($event)"></app-login>
-<mat-sidenav-container *ngIf="logged" class="row example-container">
+<app-login  *ngIf="!authService.logged" [logged]="logged" (setLogged)="login($event)"></app-login>
+<mat-sidenav-container *ngIf="authService.logged" class="row example-container">
 
   <mat-sidenav #sidenav @triggerElementShow mode="side" class="col-sm-4 col-md-2 col-10 display-inbl"
                [(opened)]="opened" (opened)="events.push('open!')"

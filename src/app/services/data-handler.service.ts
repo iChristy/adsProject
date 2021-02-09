@@ -15,7 +15,7 @@ import {Content} from '../classes/Content';
 import {Flats} from '../classes/Flats';
 import {CitizenInfo} from '../classes/CitizenInfo';
 import {Disconnection} from '../classes/Disconnection';
-import {ZayavkaInterface} from '../interfaces/ZayavkaInterface';
+import {ZayavkaInterface} from '../interfaces/zayavka-interface';
 import {WebSocketService} from './web-socket.service';
 import {Sending} from '../classes/Sending';
 
@@ -25,7 +25,8 @@ import {Sending} from '../classes/Sending';
 export class DataHandlerService {
 
   webSocketURL: string = 'ws://10.10.10.41:8097/wsSocket/ws/';
-  idUser: string = 'PDCvH0p7BT';
+  idUser: string =
+    'PDCvH0p7BT';
 
   zayavkiList: Zayavka[] = [];
   disconnectionsList: Disconnection[] = [];
@@ -150,6 +151,7 @@ export class DataHandlerService {
       ))
       .subscribe(
         result => {
+          console.log(result);
           this.contents = result[0];
           this.statusList.next(result[1]);
           this.typeList.next(result[2]);
@@ -157,7 +159,6 @@ export class DataHandlerService {
           this.getDynamicLists();
         }
       );
-
     return staticLists;
   }
 

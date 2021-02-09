@@ -1,4 +1,4 @@
-import {ZayavkaInterface} from '../interfaces/ZayavkaInterface';
+import {ZayavkaInterface} from '../interfaces/zayavka-interface';
 
 export class Zayavka implements ZayavkaInterface {
 

@@ -1,3 +1,84 @@
 .mat-raised-button:not([class*=mat-elevation-z]) {
   box-shadow: none !important;
 }
+
+.full-height {
+  min-height: 100vh !important;
+}
+
+.login-div-card {
+  position: absolute;
+  margin: 0 auto;
+  height: 100vh !important;
+}
+
+#card-content {
+  padding-top: 25%;
+  padding-right: 5%;
+  padding-left: 5%
+}
+
+#back-color {
+  background-color: #303030;
+}
+
+#col-position {
+  top: 20%;
+  position: relative;
+}
+
+#button-entry {
+  margin-top: 40px
+}
+
+#logo {
+  top: 30%;
+  display: inline-block;
+  position: absolute;
+  color: white
+}
+
+#logo-text {
+  margin-top: 20px;
+}
+
+.form-parent-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.login-card {
+  min-height: 500px;
+}
+
+#label-entry {
+  margin-right: 10px;
+  font-weight: 600;
+  font-size: 24px;
+  color: deeppink;
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+#label-reg {
+  font-weight: 600;
+  font-size: 24px;
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+#header-card {
+  padding-top: 100px;
+  padding-bottom: 30px;
+}
+
+.label-active {
+  font-size: 24px;
+  color: deeppink;
+}
+
+@media screen and (max-width: 800px) {
+  #logo-div {
+    display: none;
+  }
+
+}

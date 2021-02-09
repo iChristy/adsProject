@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy} from '@angular/core';
 import {DataHandlerService} from './services/data-handler.service';
-import {ZayavkaInterface} from './interfaces/ZayavkaInterface';
+import {ZayavkaInterface} from './interfaces/zayavka-interface';
 import {Houses} from './classes/Houses';
 import {elementShow} from './animations';
 import {AuthService} from './services/auth.service';
+import {CookieService} from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-root',
@@ -18,13 +19,15 @@ export class AppComponent implements OnInit, OnDestroy{
   houses: Houses[] = [];
   logged: boolean = false;
 
-  constructor(private dataHandlerService: DataHandlerService, private authService: AuthService) {
+  constructor(private dataHandlerService: DataHandlerService, public authService: AuthService, private cookieService: CookieService) {
   }
 
   ngOnInit() {
     // this.dataHandlerService.connectToWebSocket();
-    this.dataHandlerService.getStaticLists();
+    // this.dataHandlerService.getStaticLists();
     this.logged = this.authService.getLogged();
+    // this.cookieService.delete('token_');
+    if (this.cookieService.get('token_')) { this.authService.logged = this.logged = true; this.dataHandlerService.getStaticLists()};
   }
 
   onOpenedChange(opened: boolean): void {
@@ -38,11 +41,12 @@ export class AppComponent implements OnInit, OnDestroy{
   logout($event: any) {
     this.logged = false;
     this.authService.logout();
+    this.cookieService.delete('token_');
   }
 
   login($event: any) {
     this.logged = true;
-    this.authService.login();
+    this.authService.login('');
   }
 
 

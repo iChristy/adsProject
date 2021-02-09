@@ -1,43 +1,53 @@
-<div style="background-color: #303030;">
-  <div @triggerElementShow class="row justify-content" >
-    <div class="col-md-4 col-12 offset-md-1" style="min-height: 100vh;  ">
-      <mat-card style="height: 80%; margin-top: 10%; margin-bottom: 10%">
-        <div style="position: absolute; top: 20%; text-align: center">
-<!--          <h1>КОММУНАЛЬЩИК</h1>-->
-        </div>
-        <mat-card-content>
-          <div  style="padding-top: 25%; padding-right: 5%; padding-left: 5%">
-            <div style="display: inline-block"><h1 style="font-weight: bolder">Войти</h1></div>
-            <div style="display: inline-block; padding-left: 20px"><h1>Регистрация</h1></div>
-            <mat-form-field class="example-form-field full-width" style="padding-top: 50px">
-              <mat-label>
-                Логин
-              </mat-label>
-              <input matInput type="text">
-            </mat-form-field>
-            <mat-form-field class="example-form-field full-width" style="padding-top: 40px">
-              <mat-label>
-                Пароль
-              </mat-label>
-              <input matInput type="text">
-            </mat-form-field>
-            <div style="text-align: start; padding-top: 60px">
-              <button mat-raised-button color="primary" style="width: 100%" (click)="changeEntry()">Войти</button>
-<!--              <button mat-button>Регистрация</button>-->
-            </div>
-          </div>
-        </mat-card-content>
-        <div style="position: absolute; bottom: 5%; text-align: center; display: inline-block; width: 100%">
-<!--          Забыли пароль?-->
-        </div>
-      </mat-card>
-    </div>
-    <div class="col-md-6" style="min-height: 100vh; text-align: center ">
-      <div style="top: 30%; display: inline-block; position: absolute; color: white">
-<!--        <h1>КОММУНАЛЬЩИК</h1>-->
-        <img src="/assets/img/logo.png">
+<div id="back-color">
+  <div @triggerElementShow class="row justify-content">
+    <div class="col-md-4 col-12 offset-md-1">
+<!--      <mat-card id="login-card" >-->
+<!--        <mat-card-content>-->
+<!--          <div id="card-content">-->
+<!--            <div style="display: inline-block"><h1 style="font-weight: bolder">Войти</h1></div>-->
+<!--            <div style="display: inline-block; padding-left: 20px"><h1>Регистрация</h1></div>-->
+<!--            <mat-form-field class="example-form-field full-width" style="padding-top: 50px">-->
+<!--              <mat-label>-->
+<!--                Логин-->
+<!--              </mat-label>-->
+<!--              <input matInput type="text">-->
+<!--            </mat-form-field>-->
+<!--            <mat-form-field class="example-form-field full-width" style="padding-top: 40px">-->
+<!--              <mat-label>-->
+<!--                Пароль-->
+<!--              </mat-label>-->
+<!--              <input matInput type="text">-->
+<!--            </mat-form-field>-->
+<!--            <div id="button-entry">-->
+<!--              <button mat-raised-button color="primary" class="full-width" (click)="entry()">Войти</button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </mat-card-content>-->
+      <div class="login-div-card full-width" id="col-position">
 
-        <h1 style="margin-top: 20px">КОММУНАЛЬЩИК</h1>
+        <mat-card class="login-card">
+          <div id="header-card">
+          <mat-label id="label-entry">Войти</mat-label>
+          <mat-label id="label-reg">Регистрация</mat-label>
+          </div>
+          <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup)">
+            <div class="form-parent-div">
+              <mat-form-field>
+                <input matInput type='text'  formControlName="login" placeholder="Логин">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput type='text' formControlName="password" placeholder="Пароль">
+              </mat-form-field>
+              <button mat-raised-button type="submit" color="primary" id="button-entry">Войти</button>
+            </div>
+          </form>
+        </mat-card>
+      </div>
+    </div>
+    <div class="col-sm-6" id="logo-div" style="min-height: 100vh; text-align: center ">
+      <div id="logo">
+        <img src="/assets/img/logo.png">
+        <h1 id="logo-text">КОММУНАЛЬЩИК</h1>
       </div>
     </div>
   </div>

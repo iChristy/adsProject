@@ -47,6 +47,7 @@ import { DisconnectionAdditionDialogComponent } from './dialog/disconnection-add
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { LoginComponent } from './views/login/login.component';
 import {MatMenuModule} from '@angular/material/menu';
+import {CookieService} from 'ngx-cookie-service';
 
 registerLocaleData(localeRu);
 
@@ -99,7 +100,7 @@ registerLocaleData(localeRu);
     MatMenuModule
     // DragDropModule
   ],
-  providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}, {provide: MAT_DATE_LOCALE, useValue: 'ru-RU'}, MatDatepickerModule],
+  providers: [{ provide: MatPaginatorIntl, useValue: getPaginatorIntl()}, {provide: MAT_DATE_LOCALE, useValue: 'ru-RU'}, MatDatepickerModule, CookieService],
   bootstrap: [AppComponent],
   entryComponents: [
     ContentsDialogComponent

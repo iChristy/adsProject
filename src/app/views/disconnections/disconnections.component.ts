@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {ZayavkaInterface} from '../../interfaces/ZayavkaInterface';
+import {ZayavkaInterface} from '../../interfaces/zayavka-interface';
 import {Subscription} from 'rxjs';
 import {Houses} from '../../classes/Houses';
 import {Status} from '../../classes/Status';

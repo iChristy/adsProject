@@ -1,18 +1,25 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, CanDeactivate, CanLoad, Route, UrlSegment, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
+import {CookieService} from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class AccessGuard implements CanActivate, CanActivateChild, CanDeactivate<unknown>, CanLoad {
+
+  constructor(private cookieService: CookieService) {
+  }
+
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (localStorage.getItem('role') === 'master') {
-      return false;
+    if (this.cookieService.get('token_')) {
+      return true;
     }
-    return true;
+    return false;
   }
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
