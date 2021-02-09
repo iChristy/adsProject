@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {DataHandlerService} from './services/data-handler.service';
 import {ZayavkaInterface} from './interfaces/zayavka-interface';
 import {Houses} from './classes/Houses';
@@ -12,7 +12,7 @@ import {CookieService} from 'ngx-cookie-service';
   styleUrls: ['./app.component.css'],
   animations: [elementShow]
 })
-export class AppComponent implements OnInit, OnDestroy{
+export class AppComponent implements OnInit, OnDestroy {
 
   opened: boolean = true;
   events: string[] = [];
@@ -27,7 +27,11 @@ export class AppComponent implements OnInit, OnDestroy{
     // this.dataHandlerService.getStaticLists();
     this.logged = this.authService.getLogged();
     // this.cookieService.delete('token_');
-    if (this.cookieService.get('token_')) { this.authService.logged = this.logged = true; this.dataHandlerService.getStaticLists()};
+    if (this.authService.checkAuthToken()) {
+      this.authService.getDataFromToken(this.cookieService.get('token_'));
+      this.dataHandlerService.getStaticLists();
+    }
+    ;
   }
 
   onOpenedChange(opened: boolean): void {

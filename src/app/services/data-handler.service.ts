@@ -25,8 +25,8 @@ import {Sending} from '../classes/Sending';
 export class DataHandlerService {
 
   webSocketURL: string = 'ws://10.10.10.41:8097/wsSocket/ws/';
-  idUser: string =
-    'PDCvH0p7BT';
+  idUser: string = '';
+    // 'PDCvH0p7BT';
 
   zayavkiList: Zayavka[] = [];
   disconnectionsList: Disconnection[] = [];

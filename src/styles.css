@@ -1,17 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; overflow-x: hidden;}
-body { margin: 0;
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
   /*font-family: 'Montserrat', sans-serif;*/
   font-family: Roboto, "Helvetica Neue", sans-serif;
+
 }
 
 .display-inbl {
   display: inline-block;
 }
+
 .mat-card:not([class*=mat-elevation-z]) {
   box-shadow: none !important;
 }
+
 .mat-elevation-z8 {
   box-shadow: none !important;
 }
@@ -19,36 +27,45 @@ body { margin: 0;
 .full-width {
   width: 100%;
 }
+
 .tek-color {
   color: lightskyblue !important;
   transition: color 1.5s ease-out 0.3s;
 }
+
 .avar-color {
   color: hotpink !important;
   transition: color 1.5s ease-out 0.3s;
 }
+
 .plat-color {
   color: aquamarine !important;
   transition: color 1.5s ease-out 0.3s;
 }
-.div-top{
+
+.div-top {
   padding-top: 20px;
 }
+
 .mat-mini-fab:not([class*=mat-elevation-z]) {
   box-shadow: none;
 }
+
 .option-all {
   border-bottom: 1px solid;
 }
+
 .div-top-min {
   padding-top: 5px;
 }
+
 .align-center {
   text-align: center;
 }
 
 element.style {
 }
+
 .alert-danger {
   color: #6c757d;
   border-color: #f44336;

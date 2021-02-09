@@ -66,11 +66,6 @@ export class ZayavkiAdditionComponent implements OnInit {
 
   }
 
-  addNew() {
-    // this.dataHandlerService.setZayavka();
-    // this.zayavka = this.dataHandlerService.getZayavka();
-  }
-
   show() {
     console.log(this.dataHandlerService.getContentList('Электротехнические', 'Текущая'));
     console.log(this.zayavka);
@@ -89,7 +84,6 @@ export class ZayavkiAdditionComponent implements OnInit {
   }
 
   creationOfZayavka() {
-
     this.dataHandlerService.addNewZayavka(this.zayavka);
     this.zayavka = new Zayavka();
   }
