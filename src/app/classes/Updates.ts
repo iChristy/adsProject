@@ -1,13 +1,10 @@
-export class Updates {
-  id: number;
-  code: string;
-  prefix: string;
-  updateFields: Array<object>;
+import {UpdatesInterface} from '../interfaces/UpdatesInterface';
 
-  constructor(id: number, code: string, prefix: string, updateFields: Array<object>) {
-    this.id = id;
+export class Updates implements UpdatesInterface{
+
+  constructor(public code: number, public prefix: string, public update: Array<object>) {
     this.code = code;
     this.prefix = prefix;
-    this.updateFields = updateFields;
+    this.update = update;
   }
 }

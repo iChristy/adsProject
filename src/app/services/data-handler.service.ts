@@ -4,7 +4,7 @@ import {BehaviorSubject, forkJoin, Observable, of, ReplaySubject} from 'rxjs';
 import {GetDataService} from './get-data.service';
 import {Houses} from '../classes/Houses';
 import {Status} from '../classes/Status';
-import {filter, map, mergeMap} from 'rxjs/operators';
+import {filter, map, mergeMap, tap} from 'rxjs/operators';
 import {Company} from '../classes/Company';
 import {User} from '../classes/User';
 import {KindWork} from '../classes/KindWork';
@@ -19,6 +19,8 @@ import {ZayavkaInterface} from '../interfaces/zayavka-interface';
 import {WebSocketService} from './web-socket.service';
 import {Sending} from '../classes/Sending';
 import * as shajs from 'sha.js';
+import {UpdatesInterface} from '../interfaces/UpdatesInterface';
+import {Updates} from '../classes/Updates';
 
 
 @Injectable({
@@ -66,7 +68,8 @@ export class DataHandlerService {
       let wsType: string = wsJSON.type;
       let wsAction: string = wsJSON.action;
       console.log(wsJSON.content);
-
+      console.log(wsJSON.content[0]);
+      console.log(wsJSON.content[1]);
       switch (wsType) {
         case 'MESSAGE' :
           console.log('message');
@@ -84,12 +87,17 @@ export class DataHandlerService {
   wsZayavki(action_: string, wsJSON_: any) {
     switch (action_) {
       case 'CREATE' : {
-        this.zayavkiList.push(JSON.parse(wsJSON_.content[0]));
-        this.zayavkiSubject.next(this.zayavkiList);
+        wsJSON_.content.forEach( (content_: any) => {
+            this.zayavkiList.unshift(JSON.parse(content_))
+            this.zayavkiSubject.next(this.zayavkiList)
+          }
+        )
         break;
       }
       case 'UPDATE' : {
-        this.wsZayavkiUpdate(JSON.parse(wsJSON_.content[0]));
+        wsJSON_.content.forEach( (content_: any) =>
+          this.wsZayavkiUpdate(JSON.parse(content_))
+        )
         break;
       }
       case 'hash' : {
@@ -108,7 +116,9 @@ export class DataHandlerService {
     }
   }
 
-  wsZayavkiUpdate(content_: any) {
+  wsZayavkiUpdate(content_: UpdatesInterface) {
+    console.log(content_)
+    let updates = new Updates(content_.code, content_.prefix, content_.update)
     let updateContent = content_;
     let updateCode = -1;
     let updatePrefix = '';
@@ -128,10 +138,10 @@ export class DataHandlerService {
           break;
       }
     });
-    this.updateZayavka(updateCode, updatePrefix, updateContent);
+    this.updateZayavka(updates);
   }
 
-  // send
+  // send ws
 
   sendNewZayavka(zayavka: Zayavka) {
     let stringSending: Sending = {from: this.idUser, to: ['2'], content: [zayavka], action: 'CREATE', type: 'MESSAGE'};
@@ -149,8 +159,8 @@ export class DataHandlerService {
     this.webSocketService.sendMessage(JSON.stringify(stringSending))
   }
 
-  sendUpdateZayavka() {
-    let stringSending : Sending = {from: this.idUser, to: ['2'], content: [ZayavkaNew], action: 'CREATE', type: 'MESSAGE'}
+  sendUpdateZayavka(updates: Updates) {
+    let stringSending : Sending = {from: this.idUser, to: ['2'], content: [updates], action: 'UPDATE', type: 'MESSAGE'}
     localStorage.setItem('hash_', shajs('sha256').update(JSON.stringify(stringSending)).digest('hex'))
     localStorage.setItem('zayavka_', JSON.stringify(stringSending))
     console.log(stringSending)
@@ -165,7 +175,9 @@ export class DataHandlerService {
     this.citizenInfoList = [];
 
     let staticLists = this.getDataService.getHousesList()
-      .pipe(mergeMap(
+      .pipe(
+        tap(iter => console.log(`alo alo ${iter}`)),
+        mergeMap(
         (houses_: Houses[]) => {
           // дома
           this.housesList.next(houses_);
@@ -323,14 +335,14 @@ export class DataHandlerService {
 
   // ап заявки
 
-  updateZayavka(code: number, prefix: string, updateFields: object) {
+  updateZayavka(updates: Updates) {
     let findZayavka: Zayavka;
-    let finder = this.zayavkiList.find(zayavki => zayavki.prefix === prefix && zayavki.code === code);
+    let finder = this.zayavkiList.find(zayavki => zayavki.prefix === updates.prefix && zayavki.code === updates.code);
     if (finder !== undefined) {
       findZayavka = finder;
       let ind = this.zayavkiList.indexOf(findZayavka);
-      Object.keys(updateFields).forEach(keyUpdates =>
-        Object.keys(findZayavka).forEach(key => key === keyUpdates ? Object(findZayavka)[key] = Object(updateFields)[key] : '')
+      Object.keys(updates.update).forEach(keyUpdates =>
+        Object.keys(findZayavka).forEach(key => key === keyUpdates ? Object(findZayavka)[key] = Object(updates.update)[key] : '')
       );
       console.log(this.zayavkiList);
       this.zayavkiList.splice(ind, 1, findZayavka);
@@ -338,6 +350,11 @@ export class DataHandlerService {
     } else {
       alert('Не удалось добавить заявку');
     }
+  }
+
+  updateAndSendZayavka(updates: Updates) {
+    this.updateZayavka(updates)
+    this.sendUpdateZayavka(updates)
   }
 
   // новое отключение
@@ -464,6 +481,10 @@ export class DataHandlerService {
   }
 }
 
+
+// удаление ключей
+// updateCode = Object(updateContent)[key];
+// delete Object(updateContent)[key];
 
 const ZayavkaNew: Zayavka = {
   'code': 6,

@@ -7,6 +7,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ZayavkiEditDialogComponent} from '../../dialog/zayavki-edit-dialog/zayavki-edit-dialog.component';
 import {ConfirmDialogComponent} from '../../dialog/confirm-dialog/confirm-dialog.component';
 import {EmployeeEditDialogComponent} from '../../dialog/employee-edit-dialog/employee-edit-dialog.component';
+import {Updates} from '../../classes/Updates';
 
 @Component({
   selector: 'app-zayavki-current',
@@ -59,8 +60,8 @@ export class ZayavkiCurrentComponent implements OnInit {
           result[0].forEach((r: { name: string; }) => this.zayavka.services.push(r.name));
           this.zayavka.time = result[1];
           this.zayavka.price = result[2];
-          let updateFields = {'contents': this.zayavka.services, 'time': this.zayavka.time, 'price': this.zayavka.price};
-          this.dataHandlerService.updateZayavka(this.zayavka.code, this.zayavka.prefix, updateFields);
+          let updateFields =  Object({'contents': this.zayavka.services, 'time': this.zayavka.time, 'price': this.zayavka.price});
+          this.dataHandlerService.updateAndSendZayavka(new Updates(this.zayavka.code, this.zayavka.prefix, updateFields));
         }
       }
     );
@@ -75,8 +76,8 @@ export class ZayavkiCurrentComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
         if (result) {
           Object.keys(this.zayavka).forEach(key => key === fieldName ? Object(this.zayavka)[key] = result : '');
-          let updateFields = {fieldName: result[0]};
-          this.dataHandlerService.updateZayavka(this.zayavka.code, this.zayavka.prefix, updateFields);
+          let updateFields = Object({fieldName: result[0]});
+          this.dataHandlerService.updateAndSendZayavka(new Updates(this.zayavka.code, this.zayavka.prefix, updateFields));
         }
       }
     );
@@ -90,21 +91,21 @@ export class ZayavkiCurrentComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          let updateFields = {};
+          let updateFields = null;
           Object.keys(this.zayavka).forEach(key => key === fieldName ? Object(this.zayavka)[key] = result : '');
           if (fieldName === 'workerId') {
             if (this.zayavka.status === 'принято') {
               this.zayavka.status = 'назначено';
               this.zayavka.dateWorkStart = this.dataHandlerService.formatOfDate();
-              updateFields = {fieldName: result[0], 'status': this.zayavka.status, 'dateWorkOn': this.zayavka.dateWorkStart};
+              updateFields = Object({fieldName: result[0], 'status': this.zayavka.status, 'dateWorkOn': this.zayavka.dateWorkStart});
             } else {
-              updateFields = {fieldName: result[0]};
+              updateFields = Object({fieldName: result[0]});
             }
           } else {
-            updateFields = {fieldName: result[0]};
+            updateFields = Object({fieldName: result[0]});
           }
           this.getNames();
-          this.dataHandlerService.updateZayavka(this.zayavka.code, this.zayavka.prefix, updateFields);
+          this.dataHandlerService.updateAndSendZayavka(new Updates(this.zayavka.code, this.zayavka.prefix, updateFields));
         }
       }
     );
@@ -122,9 +123,8 @@ export class ZayavkiCurrentComponent implements OnInit {
             key === fieldName ? Object(this.zayavka)[key] = fieldValue : '');
           Object.keys(this.zayavka).forEach(key =>
             key === dateName ? Object(this.zayavka)[key] = this.dataHandlerService.formatOfDate() : '');
-          let updateFields = null;
-          updateFields = dateName ? {fieldName: fieldValue, dateName: this.dataHandlerService.formatOfDate()} : {fieldName: fieldValue};
-          this.dataHandlerService.updateZayavka(this.zayavka.code, this.zayavka.prefix, updateFields);
+          let updateFields = dateName ? Object({fieldName: fieldValue, dateName: this.dataHandlerService.formatOfDate()}) : Object({fieldName: fieldValue});
+          this.dataHandlerService.updateAndSendZayavka(new Updates(this.zayavka.code, this.zayavka.prefix, updateFields));
         }
       }
     );
