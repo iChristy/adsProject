@@ -25,7 +25,7 @@ export class HeaderComponent implements OnInit {
   }
 
   checkWs() {
-    this.dataHandlerService.sendNewZayavka();
+    this.dataHandlerService.sendTestZayavka();
   }
 
   exit() {

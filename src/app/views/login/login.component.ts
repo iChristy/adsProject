@@ -8,6 +8,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {LoginInterface} from '../../interfaces/login-interface';
 import {UserOldInterface} from '../../interfaces/user-old-interface';
 import {DataHandlerService} from '../../services/data-handler.service';
+import {catchError} from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,8 @@ export class LoginComponent implements OnInit {
 
   loginData: LoginInterface;
   formGroup: FormGroup;
+  submit: boolean = false;
+  accessGetData: boolean = true;
 
   @Input() logged: boolean = false;
   @Output() setLogged = new EventEmitter();
@@ -29,7 +32,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.formGroup = this.formBuilder.group({
       login: ['', Validators.required],
-      password:  ['', Validators.required]
+      password: ['', Validators.required]
     });
   }
 
@@ -38,7 +41,10 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(formGroup: FormGroup) {
+    this.submit = true;
     this.loginData = formGroup.getRawValue();
+
     this.entry();
   }
+
 }

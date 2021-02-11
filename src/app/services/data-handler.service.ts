@@ -18,6 +18,8 @@ import {Disconnection} from '../classes/Disconnection';
 import {ZayavkaInterface} from '../interfaces/zayavka-interface';
 import {WebSocketService} from './web-socket.service';
 import {Sending} from '../classes/Sending';
+import * as shajs from 'sha.js';
+
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +28,7 @@ export class DataHandlerService {
 
   webSocketURL: string = 'ws://10.10.10.41:8097/wsSocket/ws/';
   idUser: string = '';
-    // 'PDCvH0p7BT';
+  // 'PDCvH0p7BT';
 
   zayavkiList: Zayavka[] = [];
   disconnectionsList: Disconnection[] = [];
@@ -57,36 +59,46 @@ export class DataHandlerService {
   // webSocket
 
   connectToWebSocket() {
+
     this.webSocketService.createObservableSocket(this.webSocketURL + this.idUser).subscribe(ws => {
       let wsJSON: Sending = JSON.parse(ws);
       console.log(wsJSON);
       let wsType: string = wsJSON.type;
       let wsAction: string = wsJSON.action;
-      console.log(wsJSON.content[0]);
-      let wsContent: any = JSON.parse(wsJSON.content[0]);
+      console.log(wsJSON.content);
+
       switch (wsType) {
         case 'MESSAGE' :
           console.log('message');
-          this.wsZayavki(wsAction, wsContent);
+          this.wsZayavki(wsAction, wsJSON);
           break;
         default :
           console.log();
           break;
       }
     }, error => {
-      console.log(error)
+      console.log(error);
     });
   }
 
-  wsZayavki(action_: string, content_: any) {
+  wsZayavki(action_: string, wsJSON_: any) {
     switch (action_) {
       case 'CREATE' : {
-        this.zayavkiList.push(content_);
+        this.zayavkiList.push(JSON.parse(wsJSON_.content[0]));
         this.zayavkiSubject.next(this.zayavkiList);
         break;
       }
       case 'UPDATE' : {
-        this.wsZayavkiUpdate(content_);
+        this.wsZayavkiUpdate(JSON.parse(wsJSON_.content[0]));
+        break;
+      }
+      case 'hash' : {
+        console.log(wsJSON_.hash)
+        console.log(localStorage.getItem('hash_'))
+        if (wsJSON_.hash === localStorage.getItem('hash_')) {
+          localStorage.removeItem('hash_');
+          localStorage.removeItem('zayavka_');
+        }
         break;
       }
       default: {
@@ -121,15 +133,34 @@ export class DataHandlerService {
 
   // send
 
-  sendNewZayavka() {
-    let stringSending = JSON.stringify({from: this.idUser, to: ['2'], content: [ZayavkaNew], action: 'CREATE', type: 'MESSAGE'});
+  sendNewZayavka(zayavka: Zayavka) {
+    let stringSending: Sending = {from: this.idUser, to: ['2'], content: [zayavka], action: 'CREATE', type: 'MESSAGE'};
+    localStorage.setItem('hash_', shajs('sha256').update(JSON.stringify(stringSending)).digest('hex'));
+    localStorage.setItem('zayavka_', stringSending.toString());
     console.log(stringSending);
     this.webSocketService.sendMessage(stringSending);
+  }
+
+  sendTestZayavka() {
+    let stringSending : Sending = {from: this.idUser, to: ['2'], content: [ZayavkaNew], action: 'CREATE', type: 'MESSAGE'}
+    localStorage.setItem('hash_', shajs('sha256').update(JSON.stringify(stringSending)).digest('hex'))
+    localStorage.setItem('zayavka_', JSON.stringify(stringSending))
+    console.log(stringSending)
+    this.webSocketService.sendMessage(JSON.stringify(stringSending))
+  }
+
+  sendUpdateZayavka() {
+    let stringSending : Sending = {from: this.idUser, to: ['2'], content: [ZayavkaNew], action: 'CREATE', type: 'MESSAGE'}
+    localStorage.setItem('hash_', shajs('sha256').update(JSON.stringify(stringSending)).digest('hex'))
+    localStorage.setItem('zayavka_', JSON.stringify(stringSending))
+    console.log(stringSending)
+    this.webSocketService.sendMessage(JSON.stringify(stringSending))
   }
 
   // Дома /  статусы / типы / контенты / виды
 
   getStaticLists() {
+
     this.flatsList = [];
     this.citizenInfoList = [];
 
@@ -212,6 +243,7 @@ export class DataHandlerService {
                 this.disconnectionsSubject.next(result[1]);
                 this.flatsSubject.next(result[2]);
                 this.citizenInfoSubject.next(result[3]);
+                this.connectToWebSocket();
               }
             );
           } else {
@@ -285,6 +317,8 @@ export class DataHandlerService {
     this.zayavkiList.push(zayavka);
     console.log(this.zayavkiList);
     this.zayavkiSubject.next(this.zayavkiList);
+
+    this.sendNewZayavka(zayavka);
   }
 
   // ап заявки
@@ -432,41 +466,41 @@ export class DataHandlerService {
 
 
 const ZayavkaNew: Zayavka = {
-    'code': 6,
-    'services': [
-      'Демонтаж змеевика (полотенцесушителя)!!!!',
-      'Демонтаж запорной арматуры',
-      'Демонтаж заглушки'
-    ],
-    'price': '0',
-    'email': '',
-    'address': 'г. Пермь, ул. Серебрянский проезд, д. 16',
-    'phone': '89076523452',
-    'time': '48',
-    'actions': '',
-    'status': 'принято',
-    'prefix': 'УАА',
-    'houseGuid': '9205d0ff-ff0c-4d98-8407-0343f3368cd2',
-    'flatNum': '12',
-    'flatGuid': '',
-    'dispatcherId': 'PDCvH0p7BT',
-    'masterId': 'PDCvH0p7BT',
-    'workerId': '',
-    'materials': '',
-    'picId': -1,
-    'dateBegin': '18-10-2019  14:46',
-    'fioOwner': 'Быстров Владимир Гаврилович',
-    'dateDeadline': '20-10-2019  14:45',
-    'fioSecondary': '',
-    'dateComplete': '',
-    'comment': '',
-    'typeWork': 'Сантехнические',
-    'kindWork': 'Аварийная',
-    'cancelReason': '',
-    'dateWorkEnd': '',
-    'dateWorkStart': '18-10-2019  14:46',
-    'companyId': 'usrCompany'
-  };
+  'code': 6,
+  'services': [
+    'Демонтаж змеевика (полотенцесушителя)!!!!',
+    'Демонтаж запорной арматуры',
+    'Демонтаж заглушки'
+  ],
+  'price': '0',
+  'email': '',
+  'address': 'г. Пермь, ул. Серебрянский проезд, д. 16',
+  'phone': '89076523452',
+  'time': '48',
+  'actions': '',
+  'status': 'принято',
+  'prefix': 'УАА',
+  'houseGuid': '9205d0ff-ff0c-4d98-8407-0343f3368cd2',
+  'flatNum': '12',
+  'flatGuid': '',
+  'dispatcherId': 'PDCvH0p7BT',
+  'masterId': 'PDCvH0p7BT',
+  'workerId': '',
+  'materials': '',
+  'picId': -1,
+  'dateBegin': '18-10-2019  14:46',
+  'fioOwner': 'Быстров Владимир Гаврилович',
+  'dateDeadline': '20-10-2019  14:45',
+  'fioSecondary': '',
+  'dateComplete': '',
+  'comment': '',
+  'typeWork': 'Сантехнические',
+  'kindWork': 'Аварийная',
+  'cancelReason': '',
+  'dateWorkEnd': '',
+  'dateWorkStart': '18-10-2019  14:46',
+  'companyId': 'usrCompany'
+};
 
 const ZayavkiTest: Zayavka[] = [
   {

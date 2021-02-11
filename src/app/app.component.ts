@@ -23,8 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.dataHandlerService.connectToWebSocket();
-    // this.dataHandlerService.getStaticLists();
+
     this.logged = this.authService.getLogged();
     // this.cookieService.delete('token_');
     if (this.authService.checkAuthToken()) {
@@ -50,8 +49,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   login($event: any) {
     this.logged = true;
-    this.authService.login('');
+    // this.authService.login('');
   }
+
 
 
 }

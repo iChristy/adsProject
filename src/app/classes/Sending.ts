@@ -1,5 +1,8 @@
+import {Zayavka} from './Zayavka';
+import {Updates} from './Updates';
+
 export class Sending {
-  constructor(from: string, to: Array<string>, content: Array<string>, type: string, action: string, hash: string) {
+  constructor(public from: string, public to: Array<string>, public content: any , public type: string, public action: string, public hash?: string) {
     this.from = from;
     this.to = to;
     this.content = content;
@@ -7,11 +10,4 @@ export class Sending {
     this.action = action;
     this.hash = hash;
   }
-
-  from: string;
-  to: Array<string>;
-  content: any;
-  type: string;
-  action: string;
-  hash?: string;
 }

@@ -9,7 +9,6 @@
 .login-div-card {
   position: absolute;
   margin: 0 auto;
-  height: 100vh !important;
 }
 
 #card-content {
@@ -20,6 +19,7 @@
 
 #back-color {
   background-color: #303030;
+  height: 100vh;
 }
 
 #col-position {
@@ -67,7 +67,7 @@
 }
 
 #header-card {
-  /*padding-top: 100px;*/
+  padding-top: 100px;
   padding-bottom: 30px;
 }
 
@@ -81,4 +81,7 @@
     display: none;
   }
 
+.label-error {
+  color: #f44336 !important;
+}
 }

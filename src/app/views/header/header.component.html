@@ -15,6 +15,7 @@
       <button mat-button [matMenuTriggerFor]="menu" ><mat-icon class="test-animate">settings</mat-icon></button>
       <mat-menu #menu="matMenu" >
         <button mat-menu-item value='settings' [disabled]="true" [autofocus]="false">Настройки</button>
+        <button mat-menu-item value='ws' (click)="checkWs()" [autofocus]="false">Проверить сокет</button>
         <button mat-menu-item value='exit' (click)="exit()" [autofocus]="false">Выход</button>
       </mat-menu>
 

@@ -33,22 +33,24 @@
           <form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup)">
             <div class="form-parent-div">
               <mat-form-field>
-                <input matInput type='text'  formControlName="login" placeholder="Логин">
+                <input matInput type='text' formControlName="login" placeholder="Логин">
               </mat-form-field>
               <mat-form-field>
                 <input matInput type='password' formControlName="password" placeholder="Пароль">
               </mat-form-field>
+              <mat-label class="label-error" *ngIf = "submit && formGroup.controls.login.errors || submit && formGroup.controls.password.errors">Некорректный ввод логина и/или пароля</mat-label>
+<!--              <mat-label *ngIf = "submit && formGroup.controls.login.errors || submit && formGroup.controls.password.errors">Некорректный ввод логина и/или пароля</mat-label>-->
               <button mat-raised-button type="submit" color="primary" id="button-entry">Войти</button>
             </div>
           </form>
         </mat-card>
       </div>
     </div>
-<!--    <div class="col-sm-6" id="logo-div" style="min-height: 100vh; text-align: center ">-->
-<!--      <div id="logo">-->
-<!--        <img src="/assets/img/logo.png">-->
-<!--        <h1 id="logo-text">КОММУНАЛЬЩИК</h1>-->
-<!--      </div>-->
-<!--    </div>-->
+    <div class="col-sm-6" id="logo-div" style="min-height: 100vh; text-align: center ">
+      <div id="logo">
+        <img src="/assets/img/logo.png">
+        <h1 id="logo-text">КОММУНАЛЬЩИК</h1>
+      </div>
+    </div>
   </div>
 </div>

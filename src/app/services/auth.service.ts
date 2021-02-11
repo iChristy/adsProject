@@ -6,6 +6,8 @@ import {UserOldInterface} from '../interfaces/user-old-interface';
 import {LoginInterface} from '../interfaces/login-interface';
 import {Data} from '@angular/router';
 import {DataHandlerService} from './data-handler.service';
+import {UserOld} from '../classes/UserOld';
+import {User} from '../classes/User';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +18,6 @@ export class AuthService {
 
   logged: boolean = false;
   private urlJwt = 'http://89.108.82.118:31055/jwt_se/jjwt';
-
 
   constructor(private httpClient : HttpClient, private cookieService: CookieService, private dataHandlerService: DataHandlerService) { }
 
@@ -41,12 +42,12 @@ export class AuthService {
 
   setCookie(token_: string) {
     let dateExpire = new Date();
-    console.log(dateExpire.setTime(dateExpire.getTime() + (20* 60 * 1000)));
-    this.cookieService.set('token_', token_,  0.0138889);
+    console.log(dateExpire.setTime(dateExpire.getTime() + (20* 60 * 1000)))
+    this.cookieService.set('token_', token_,  0.0138889)
   }
 
   checkAuthToken() {
-    return this.logged = this.cookieService.get('token_') ? true : false;
+    return this.logged = this.cookieService.get('token_') ? true : false
   }
 
   getDataFromToken(tokenId: string) {
@@ -54,6 +55,11 @@ export class AuthService {
     const decodedToken = helper.decodeToken(tokenId)
     let decoding = JSON.parse(JSON.stringify(decodedToken.sub))
     let userData  = JSON.parse(decoding) as UserOldInterface
+    // let userNewField = new UserOld(userData.char, userData.company, userData.companyIDsocket, userData.id, userData.master, userData.name, userData.role, userData.type, userData.houses);
+    // console.log(userNewField);
+    // let userNew = new User();
+    // userNewField.setDataNewField(userNew);
+    // console.log(userNew)
     this.dataHandlerService.idUser = userData.id
     this.dataHandlerService.getStaticLists()
   }
@@ -67,7 +73,10 @@ export class AuthService {
 
         this.setCookie(tokens.token_id)
         this.checkAuthToken()
-      }, error => console.log(error)
+      }, error => {
+        console.log(error)
+        return error
+      }
     );
   }
 }

@@ -6,5 +6,6 @@ export interface UserOldInterface {
   type: string;
   master: string;
   id: string;
+  houses: Array<string>;
   companyIDsocket: string;
 }

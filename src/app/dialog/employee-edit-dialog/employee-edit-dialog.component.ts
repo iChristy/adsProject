@@ -33,14 +33,17 @@ export class EmployeeEditDialogComponent implements OnInit {
     this.typeWork = this.data[4] ? this.data[4] : undefined;
 
     if (this.fieldName === 'masterId') {
-      this.masters = this.dataHandler.masters.getValue().concat(this.dataHandler.dispatchersMasters.getValue());
+      this.masters = this.dataHandler.masters.getValue().concat(this.dataHandler.dispatchersMasters.getValue())
+      this.tmpSelect = this.masters.filter(m => m.role === 'master' ? m.typeWork === this.typeWork : m)
     }
 
     if (this.fieldName === 'workerId') {
-      this.dataHandler.workers.subscribe(workers => this.workers = workers);
+      this.dataHandler.workers.subscribe( workers => {this.workers = workers})
+      this.tmpSelect = this.workers.filter(w =>  w.typeWork === this.typeWork)
     }
 
-    this.tmpSelect = this.masters ? this.masters.filter(m => m.role === 'master' ? m.typeWork === this.typeWork : m) : this.workers.filter(w => w.typeWork === this.typeWork);
+    // this.tmpSelect = this.masters ? this.masters.filter(m => m.role === 'master' ? m.typeWork === this.typeWork : m) :
+    //   this.workers.filter(w =>  w.typeWork === this.typeWork);
   }
 
 
