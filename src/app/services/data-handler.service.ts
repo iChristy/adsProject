@@ -208,7 +208,7 @@ export class DataHandlerService {
   //  Заявки / юзеры / компания / отключения / квартиры / инфо
 
   getDynamicLists() {
-    let dynamicLists = this.getDataService.getCurrentUser()
+    let dynamicLists = this.getDataService.getUsers()
       .subscribe(
         user => {
           console.log(user);

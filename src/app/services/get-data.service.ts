@@ -33,7 +33,7 @@ export class GetDataService {
 
   getHousesList(): Observable<Houses[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest', {
-      params: new HttpParams().set('houses', '1').set('dop', 'PDCvH0p7BT')
+      params: new HttpParams().set('housesList', '1').set('userId', 'PDCvH0p7BT')
     })
       .pipe(map((response: any) => response));
   }
@@ -47,14 +47,14 @@ export class GetDataService {
 
   getCitizenInfoList(companyId: string): Observable<CitizenInfo[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest', {
-      params: new HttpParams().set('companyId', 'usrCompany').set('citizenInfo', '1')
+      params: new HttpParams().set('companyId', 'usrCompany').set('contactInfo', '1')
     })
       .pipe(map((response: any) => response));
   }
 
   getStatusList(): Observable<Status[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest', {
-      params: new HttpParams().set('status_', '1')
+      params: new HttpParams().set('statusList', '1')
     })
       .pipe(map((response: any) => response));
   }
@@ -66,7 +66,7 @@ export class GetDataService {
       .pipe(map((response: any) => response));
   }
 
-  getCurrentUser(): Observable<User[]> {
+  getUsers(): Observable<User[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest?', {
       params: new HttpParams().set('users', '1')
     })
@@ -75,21 +75,21 @@ export class GetDataService {
 
   getTypeList(): Observable<TypeWork[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest', {
-      params: new HttpParams().set('type', '1')
+      params: new HttpParams().set('typeList', '1')
     })
       .pipe(map((response: any) => response));
   }
 
   getKindList(): Observable<KindWork[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest', {
-      params: new HttpParams().set('kind', '1')
+      params: new HttpParams().set('kindList', '1')
     })
       .pipe(map((response: any) => response));
   }
 
   getContentList(): Observable<Content[]> {
     return this.http.get('http://localhost:8070/Request/ForRequest', {
-      params: new HttpParams().set('content', '1')
+      params: new HttpParams().set('contentList', '1')
     })
       .pipe(map((response: any) => response));
   }
